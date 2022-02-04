@@ -49,8 +49,6 @@ export class Scribe {
             this.config = {...this.config, ...config};
         }
 
-        console.log(this.config);
-
         // @ts-ignore
         this.setForm(this.config.form);
 
@@ -63,12 +61,13 @@ export class Scribe {
         this.listener();
         this.attachNavigation();
         this.attachOk();
+        this.addLoadedForm();
 
-        this.form.classList.add("scribe-form-loaded");
+     //   this.focusElement(this.getInput(this.list[0]), true)
     }
 
     /**
-     *
+     * Obtains the current Scribe Version number.
      * @returns string
      */
     public version(): string {
@@ -110,6 +109,20 @@ export class Scribe {
                 this.nextSlide();
             }
         });
+
+        // TODO move to seperate func
+        //this.form.querySelectorAll("textarea").forEach(text => {
+           // text.addEventListener("keypress", e => {
+           //     if (e.key === 'Enter') {
+           //         this.nextSlide();
+           //     }
+           // })
+           //  text.addEventListener("keydown", e => {
+           //      if (e.shiftKey && e.key === 'Enter') {
+           //          text.value += "\n";
+           //      }
+           //  })
+       // });
     }
 
     /**
@@ -125,6 +138,7 @@ export class Scribe {
         const curr = this.list[this.currentSlide],
             prev = this.list[this.currentSlide - 1];
 
+        // TODO: Broken here. Adding unecessary classes.
         prev.classList.add("scribe-item-show");
         curr.classList.remove("scribe-item-show");
         curr.classList.add("scribe-item-hide-forwards");
@@ -234,14 +248,20 @@ export class Scribe {
      * Focuses the HTMLElement, in order for the user to type when
      * a slide has transitioned.
      * @param el
+     * @param timeout
      * @private
      */
-    private focusElement(el: HTMLElement | null): void {
-        if (el) {
-            setTimeout(() => {
-                el.focus();
-            }, this.animatingTime)
+    private focusElement(el: HTMLElement | null, timeout: boolean = true): void {
+        if (!el) {
+            return;
         }
+        if (!timeout) {
+            el.focus();
+            return;
+        }
+        setTimeout(() => {
+            el.focus();
+        }, this.animatingTime)
     }
 
     /**
@@ -257,5 +277,14 @@ export class Scribe {
            Log.error(`${form} is not a valid HTMLFormElement`);
         }
         this.form = form;
+    }
+
+    /**
+     * Add the loaded class to the scribe form, ths will prevent
+     * any transitions occurring on initial page load.
+     * @private
+     */
+    private addLoadedForm(): void {
+        this.form.classList.add("scribe-form-loaded");
     }
 }

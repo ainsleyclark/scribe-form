@@ -86,7 +86,7 @@ var Log = /*#__PURE__*/function () {
   return Log;
 }();
 
-_defineProperty(Log, "prefix", "Scribe - ");
+_defineProperty(Log, "prefix", "Scribe -");
 
 /***/ }),
 
@@ -174,9 +174,8 @@ var Scribe = /*#__PURE__*/function () {
 
     if (config) {
       this.config = _objectSpread(_objectSpread({}, this.config), config);
-    }
+    } // @ts-ignore
 
-    console.log(this.config); // @ts-ignore
 
     this.setForm(this.config.form);
     this.list = this.form.querySelectorAll(".scribe-item");
@@ -186,10 +185,10 @@ var Scribe = /*#__PURE__*/function () {
     this.listener();
     this.attachNavigation();
     this.attachOk();
-    this.form.classList.add("scribe-form-loaded");
+    this.addLoadedForm(); //   this.focusElement(this.getInput(this.list[0]), true)
   }
   /**
-   *
+   * Obtains the current Scribe Version number.
    * @returns string
    */
 
@@ -245,7 +244,19 @@ var Scribe = /*#__PURE__*/function () {
         if (e.key === 'Enter') {
           _this.nextSlide();
         }
-      });
+      }); // TODO move to seperate func
+      //this.form.querySelectorAll("textarea").forEach(text => {
+      // text.addEventListener("keypress", e => {
+      //     if (e.key === 'Enter') {
+      //         this.nextSlide();
+      //     }
+      // })
+      //  text.addEventListener("keydown", e => {
+      //      if (e.shiftKey && e.key === 'Enter') {
+      //          text.value += "\n";
+      //      }
+      //  })
+      // });
     }
     /**
      * Goes to the previous slide in the form.
@@ -261,7 +272,8 @@ var Scribe = /*#__PURE__*/function () {
       }
 
       var curr = this.list[this.currentSlide],
-          prev = this.list[this.currentSlide - 1];
+          prev = this.list[this.currentSlide - 1]; // TODO: Broken here. Adding unecessary classes.
+
       prev.classList.add("scribe-item-show");
       curr.classList.remove("scribe-item-show");
       curr.classList.add("scribe-item-hide-forwards");
@@ -392,14 +404,24 @@ var Scribe = /*#__PURE__*/function () {
      * Focuses the HTMLElement, in order for the user to type when
      * a slide has transitioned.
      * @param el
+     * @param timeout
      * @private
      */
     function focusElement(el) {
-      if (el) {
-        setTimeout(function () {
-          el.focus();
-        }, this.animatingTime);
+      var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      if (!el) {
+        return;
       }
+
+      if (!timeout) {
+        el.focus();
+        return;
+      }
+
+      setTimeout(function () {
+        el.focus();
+      }, this.animatingTime);
     }
     /**
      * Sets the form
@@ -419,6 +441,17 @@ var Scribe = /*#__PURE__*/function () {
       }
 
       this.form = form;
+    }
+    /**
+     * Add the loaded class to the scribe form, ths will prevent
+     * any transitions occurring on initial page load.
+     * @private
+     */
+
+  }, {
+    key: "addLoadedForm",
+    value: function addLoadedForm() {
+      this.form.classList.add("scribe-form-loaded");
     }
   }]);
 

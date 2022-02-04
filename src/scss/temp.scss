@@ -6,7 +6,7 @@ header {
 }
 
 body {
-	height: 100vh;
+	height: 100%;
 	overflow: hidden;
 }
 
@@ -26,6 +26,7 @@ body {
 		align-items: center;
 		width: 80vw;
 		height: 100%;
+		min-height: 100vh;
 		margin: 0 auto;
 
 		&-loaded {
@@ -44,6 +45,8 @@ body {
 		align-items: flex-start;
 		width: 100%;
 		height: 100%;
+		min-height: 100vh;
+		background: yellow;
 		margin: 0;
 		padding: 0 2rem;
 	}
@@ -69,11 +72,13 @@ body {
 		&-hide {
 			opacity: 0 !important;
 			transform: translateY(-100vh) !important;
+			pointer-events: none;
 		}
 
 		&-hide-forwards {
 			opacity: 0 !important;
 			transform: translateY(100vh) !important;
+			pointer-events: none;
 		}
 
 		&-show {

@@ -3,7 +3,7 @@
  * console.
  */
 export class Log {
-    static prefix = "Scribe - "
+    static prefix = "Scribe -"
 
     /**
      * Log a console error.
