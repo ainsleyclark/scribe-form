@@ -13,7 +13,7 @@ declare interface ScribeInstance {
     getInfo(): ScribeInfo;
 
     /**
-     * Go to specific slide by number or keywords.
+     * Go to specific slide by index or keywords.
      * @param target the slide to go to (index or a code-word)
      */
     goTo(target: number | 'next' | 'prev' | 'first' | 'last'): void,
@@ -44,6 +44,9 @@ declare interface ScribeInstance {
      */
     isLastSlide(): boolean
 
+    /**
+     * TODO
+     */
     validate(): boolean,
 }
 
@@ -69,6 +72,10 @@ declare interface ScribeConfig {
      */
     horizontal?: boolean
     /**
+     * TODO
+     */
+    okButton?: string | false;
+    /**
      * Customized previous buttons.
      * This option will be ignored if controlsContainer is a Node element or a CSS selector.
      * @defaultValue false
@@ -79,8 +86,6 @@ declare interface ScribeConfig {
      * @defaultValue true
      */
     nextButton?: HTMLElement | string | false;
-
-
 }
 
 /**

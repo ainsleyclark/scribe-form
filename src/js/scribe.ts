@@ -5,6 +5,7 @@
  * @author URL:   https://ainsley.dev
  * @author Email: hello@ainsley.dev
  */
+
 import {Log} from "./common/log";
 
 const VERSION = "1.0.0";
@@ -17,6 +18,7 @@ export class Scribe {
         form: ".scribe-form",
         controls: true,
         horizontal: false,
+        okButton: ".scribe-ok",
         prevButton: ".scribe-prev",
         nextButton: ".scribe-next",
     }
@@ -38,7 +40,8 @@ export class Scribe {
     animatingTime = 600;
 
     /**
-     *
+     * Creates a new Scribe instance based of the configuration passed.
+     * If no config is passed, scribe defaults will be used.
      * @param config
      */
     constructor(config?: ScribeConfig) {
@@ -59,6 +62,7 @@ export class Scribe {
 
         this.listener();
         this.attachNavigation();
+        this.attachOk();
 
         this.form.classList.add("scribe-form-loaded");
     }
@@ -76,7 +80,24 @@ export class Scribe {
      * @param target
      */
     public goTo(target: number | 'next' | 'prev' | 'first' | 'last'): void {
-        console.log("go to");
+        if (typeof target === 'string') {
+            switch (target as string) {
+                case 'next':
+                    this.nextSlide();
+                    break;
+                case 'prev':
+                    this.previousSlide();
+                    break;
+                case 'first':
+                    break;
+                case 'last':
+                    break;
+                default:
+                    Log.error("Target should be 'next', 'prev', 'first', 'last' or index");
+            }
+            return;
+        }
+        // TODO: Handle index
     }
 
     /**
@@ -191,6 +212,15 @@ export class Scribe {
                 this.previousSlide();
             })
         }
+    }
+
+    private attachOk(): void {
+        if (!this.config.okButton) {
+            return;
+        }
+        this.form.querySelectorAll(this.config.okButton).forEach(btn => {
+            btn.addEventListener("click", () => this.nextSlide());
+        })
     }
 
     /**

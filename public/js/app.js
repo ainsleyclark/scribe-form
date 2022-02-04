@@ -144,7 +144,8 @@ var Scribe = /*#__PURE__*/function () {
    */
 
   /**
-   *
+   * Creates a new Scribe instance based of the configuration passed.
+   * If no config is passed, scribe defaults will be used.
    * @param config
    */
   function Scribe(config) {
@@ -154,6 +155,7 @@ var Scribe = /*#__PURE__*/function () {
       form: ".scribe-form",
       controls: true,
       horizontal: false,
+      okButton: ".scribe-ok",
       prevButton: ".scribe-prev",
       nextButton: ".scribe-next"
     });
@@ -183,6 +185,7 @@ var Scribe = /*#__PURE__*/function () {
     });
     this.listener();
     this.attachNavigation();
+    this.attachOk();
     this.form.classList.add("scribe-form-loaded");
   }
   /**
@@ -204,7 +207,29 @@ var Scribe = /*#__PURE__*/function () {
   }, {
     key: "goTo",
     value: function goTo(target) {
-      console.log("go to");
+      if (typeof target === 'string') {
+        switch (target) {
+          case 'next':
+            this.nextSlide();
+            break;
+
+          case 'prev':
+            this.previousSlide();
+            break;
+
+          case 'first':
+            break;
+
+          case 'last':
+            break;
+
+          default:
+            _common_log__WEBPACK_IMPORTED_MODULE_0__.Log.error("Target should be 'next', 'prev', 'first', 'last' or index");
+        }
+
+        return;
+      } // TODO: Handle index
+
     }
     /**
      *
@@ -338,6 +363,21 @@ var Scribe = /*#__PURE__*/function () {
           _this2.previousSlide();
         });
       }
+    }
+  }, {
+    key: "attachOk",
+    value: function attachOk() {
+      var _this3 = this;
+
+      if (!this.config.okButton) {
+        return;
+      }
+
+      this.form.querySelectorAll(this.config.okButton).forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          return _this3.nextSlide();
+        });
+      });
     }
     /**
      * Obtains the input element from a list item.
