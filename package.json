@@ -1,0 +1,22 @@
+{
+  "name": "scribe-form",
+  "version": "1.0.0",
+  "description": "Full screen form",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ainsleyclark/scribe-form.git"
+  },
+  "author": "Ainsley Clark",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ainsleyclark/scribe-form/issues"
+  },
+  "homepage": "https://github.com/ainsleyclark/scribe-form#readme",
+  "dependencies": {
+    "esbuild": "^0.14.18"
+  }
+}
