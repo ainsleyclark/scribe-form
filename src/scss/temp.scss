@@ -1,0 +1,84 @@
+header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	padding: 0 1rem;
+}
+
+body {
+	height: 100vh;
+	overflow: hidden;
+}
+
+
+.scribe {
+	$self: &;
+
+
+	&-controls {
+		position: absolute;
+		bottom: 1rem;
+		right: 1rem;
+	}
+
+	&-form {
+		display: flex;
+		align-items: center;
+		width: 80vw;
+		height: 100%;
+		margin: 0 auto;
+
+		&-loaded {
+
+			#{$self}-item {
+				transition: transform 600ms ease 0s, opacity 300ms ease 0s;
+				will-change: transform, opacity;
+			}
+		}
+	}
+
+	&-list {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0 2rem;
+	}
+
+	&-item {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		min-height: 100vh;
+		margin: 0;
+		list-style-type: none;
+
+		&:not(:first-child) {
+			transform: translateY(100vh);
+			opacity: 0;
+		}
+
+		&-hide {
+			opacity: 0 !important;
+			transform: translateY(-100vh) !important;
+		}
+
+		&-hide-forwards {
+			opacity: 0 !important;
+			transform: translateY(100vh) !important;
+		}
+
+		&-show {
+			opacity: 1 !important;
+			transform: translateY(0) !important;
+		}
+	}
+}

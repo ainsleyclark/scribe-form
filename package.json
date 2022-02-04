@@ -4,10 +4,13 @@
 	"description": "Full screen form",
 	"main": "index.js",
 	"scripts": {
-		"prod": "node config/esbuild.prod.js -production",
-		"production": "npm run production",
-		"watch": "node config/esbuild.watch.js",
-		"serve": "npm run watch"
+		"dev": "npm run development",
+		"development": "mix",
+		"watch": "mix watch",
+		"watch-poll": "mix watch -- --watch-options-poll=1000",
+		"hot": "mix watch --hot",
+		"production": "mix --production && npm run image",
+		"prod": "npm run production"
 	},
 	"repository": {
 		"type": "git",
@@ -23,6 +26,15 @@
 		"browser-sync": "^2.27.7",
 		"esbuild": "^0.14.18",
 		"esbuild-plugin-sass": "^1.0.1",
-		"esbuild-serve": "^1.0.1"
+		"esbuild-serve": "^1.0.1",
+		"laravel-mix": "^6.0.41",
+		"resolve-url-loader": "^5.0.0",
+		"sass-loader": "^12.4.0",
+		"ts-loader": "^9.2.6",
+		"typescript": "^4.5.5"
+	},
+	"dependencies": {
+		"normalize.css": "^8.0.1",
+		"pristinejs": "^0.1.9"
 	}
 }

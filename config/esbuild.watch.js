@@ -1,10 +1,12 @@
-const sassPlugin = require("esbuild-plugin-sass"),
-	esbuild = require('esbuild'),
-	browserSync = require("browser-sync").create();
+import sassPlugin from "esbuild-plugin-sass";
+import esbuild from "esbuild";
+import browserSync from "browser-sync";
+
+const bs = browserSync.create()
 
 const options = {
 	entryPoints: [
-		'src/js/app.js',
+		'src/js/app.ts',
 		'src/scss/app.scss',
 	],
 	logLevel: "debug",
@@ -17,7 +19,7 @@ const options = {
 }
 
 // Server initialization
-browserSync.init({
+bs.init({
 	startPath: "/", 			// Initial path
 	port: 8080, 				// Port number
 	logLevel: "silent", 		// Log level
@@ -31,10 +33,10 @@ browserSync.init({
 	files: ["src/", "public/*.html"], // Listening to files under src
 });
 
-browserSync.watch(["src/"], function (event, file) {
+bs.watch(["src/"], function (event, file) {
 	esbuild.build(options)
 		.then(() => console.log("⚡ Build complete! ⚡"))
-		.catch(() => process.exit(1));
+		.catch(e => console.log("Error: ", e));
 });
 
 

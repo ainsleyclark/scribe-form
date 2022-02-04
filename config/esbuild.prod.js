@@ -1,9 +1,9 @@
-const esbuild = require('esbuild'),
-	sassPlugin = require("esbuild-plugin-sass");
+import sassPlugin from "esbuild-plugin-sass";
+import esbuild from "esbuild";
 
 const options = {
 	entryPoints: [
-		'src/js/app.js',
+		'src/js/app.ts',
 		'src/scss/app.scss',
 	],
 	logLevel: "debug",

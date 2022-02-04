@@ -1,3 +1,22 @@
-h1	{
-	color: yellow;
-}
+/**
+ * app.js
+ * All custom JS for theme stored here.
+ * @author Ainsley Clark
+ * @author URL:   https://ainsley.dev
+ * @author Email: hello@ainsley.dev
+ */
+
+/*  ====================
+    Vendor
+    ==================== */
+@import "~normalize.css/normalize.css";
+
+/*  ====================
+    Base
+    ==================== */
+@import "base/global";
+
+/*  ====================
+    Temp
+    ==================== */
+@import "temp";

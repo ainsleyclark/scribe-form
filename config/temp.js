@@ -1,3 +1,8 @@
+"prod": "node config/esbuild.prod.js -production",
+	"production": "npm run production",
+	"watch": "node config/esbuild.watch.js",
+	"serve": "npm run watch"
+
 import browserSync from "browser-sync";
 import chalk from "chalk";
 import commandLineArgs from "command-line-args";
@@ -69,3 +74,5 @@ del.sync("./public-dev/dist");
 		buildResult.rebuild();
 	});
 })();
+
+

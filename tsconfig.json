@@ -10,5 +10,6 @@
 			"*": ["src/types*.d.ts"]
 		},
 		"allowSyntheticDefaultImports": true,
+		"strictPropertyInitialization": false
 	}
 }
