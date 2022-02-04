@@ -1,4 +1,7 @@
-export interface ScribeInstance {
+/**
+ *
+ */
+declare interface ScribeInstance {
 	/**
 	 * Version number of scribe.
 	 */
@@ -37,11 +40,11 @@ export interface ScribeInstance {
 
 	validate(): boolean,
 }
-
 /**
- *
+ * Configuration for Scribe that is passed when a
+ * new instance is created.
  */
-export interface ScribeConfig {
+declare interface ScribeConfig {
 	/**
 	 * Form
 	 * @defaultValue ".scribe-form"
@@ -65,8 +68,10 @@ export interface ScribeConfig {
 	 */
 	prevButton?: HTMLElement | string | false;
 }
-
-export interface ScribeInfo {
+/**
+ *
+ */
+declare interface ScribeInfo {
 	index: number;
 	items: number;
 	navContainer?: HTMLElement

@@ -119,10 +119,15 @@ export class Scribe {
 	public isLastSlide(): boolean {
 		return this.list.length - 1 === this.currentSlide;
 	}
-
+	/**
+	 * Obtains Scribe information.
+	 * TODO: Add navContainer etc.
+	 * @returns ScribeInfo
+	 */
 	public getInfo(): ScribeInfo {
 		return <ScribeInfo>{
-
+			index: this.currentSlide,
+			items: this.list.length,
 		}
 	}
 	/**
