@@ -62,9 +62,10 @@ export class Scribe {
 			})
 		}
 	}
-
 	/**
-	 *
+	 * Goes to the previous slide in the form.
+	 * If it's the first slide, the function will exit.
+	 * Input elements are autofocused once the animation has been completed.
 	 */
 	public previousSlide() {
 		if (this.isFirstSlide()) {
@@ -82,10 +83,10 @@ export class Scribe {
 
 		this.currentSlide--;
 	}
-
-
 	/**
-	 *
+	 * Goes to the next slide in the form.
+	 * If it's the last slide, the function will exit.
+	 * Input elements are autofocused once the animation has been completed.
 	 */
 	public nextSlide() {
 		if (this.isLastSlide()) {
@@ -104,21 +105,6 @@ export class Scribe {
 
 		this.currentSlide++;
 	}
-
-	/**
-	 * Goes to a specific slide by index.
-	 * @param index
-	 */
-	public goToSlide(index: number) {
-
-
-		const isValid = this.validator.validate(this.list[this.currentSlide]);
-		if (!isValid) {
-			return;
-		}
-		// Add logic to...
-	}
-
 	/**
 	 * Determines if the current slide is the first in the form.
 	 * @returns bool
@@ -133,17 +119,21 @@ export class Scribe {
 	public isLastSlide(): boolean {
 		return this.list.length - 1 === this.currentSlide;
 	}
+
+	public getInfo(): ScribeInfo {
+		return <ScribeInfo>{
+
+		}
+	}
 	/**
-	 * Obtain
+	 * Obtains the input element from a list item.
 	 * @param el
 	 * @private
 	 */
-	private getInput(el: HTMLElement): HTMLElement | null {
-		return el.querySelector("input, textarea, select");
-	}
-
+	private getInput = (el: HTMLElement): HTMLElement | null => el.querySelector("input, textarea, select");
 	/**
-	 *
+	 * Focuses the HTMLElement, in order for the user to type when
+	 * a slide has transitioned.
 	 * @param el
 	 * @private
 	 */
@@ -154,5 +144,4 @@ export class Scribe {
 			}, this.animatingTime)
 		}
 	}
-
 }

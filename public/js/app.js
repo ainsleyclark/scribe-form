@@ -65,6 +65,10 @@ var Scribe = /*#__PURE__*/function () {
 
     _defineProperty(this, "animatingTime", 600);
 
+    _defineProperty(this, "getInput", function (el) {
+      return el.querySelector("input, textarea, select");
+    });
+
     var form = document.querySelector("form");
 
     if (!form) {
@@ -113,7 +117,9 @@ var Scribe = /*#__PURE__*/function () {
       }
     }
     /**
-     *
+     * Goes to the previous slide in the form.
+     * If it's the first slide, the function will exit.
+     * Input elements are autofocused once the animation has been completed.
      */
 
   }, {
@@ -132,7 +138,9 @@ var Scribe = /*#__PURE__*/function () {
       this.currentSlide--;
     }
     /**
-     *
+     * Goes to the next slide in the form.
+     * If it's the last slide, the function will exit.
+     * Input elements are autofocused once the animation has been completed.
      */
 
   }, {
@@ -150,21 +158,6 @@ var Scribe = /*#__PURE__*/function () {
       next.classList.add("scribe-item-show");
       this.focusElement(this.getInput(next));
       this.currentSlide++;
-    }
-    /**
-     * Goes to a specific slide by index.
-     * @param index
-     */
-
-  }, {
-    key: "goToSlide",
-    value: function goToSlide(index) {
-      var isValid = this.validator.validate(this.list[this.currentSlide]);
-
-      if (!isValid) {
-        return;
-      } // Add logic to...
-
     }
     /**
      * Determines if the current slide is the first in the form.
@@ -186,26 +179,27 @@ var Scribe = /*#__PURE__*/function () {
     value: function isLastSlide() {
       return this.list.length - 1 === this.currentSlide;
     }
-    /**
-     * Obtain
-     * @param el
-     * @private
-     */
-
   }, {
-    key: "getInput",
-    value: function getInput(el) {
-      return el.querySelector("input, textarea, select");
+    key: "getInfo",
+    value: function getInfo() {
+      return {};
     }
     /**
-     *
+     * Obtains the input element from a list item.
      * @param el
      * @private
      */
 
   }, {
     key: "focusElement",
-    value: function focusElement(el) {
+    value:
+    /**
+     * Focuses the HTMLElement, in order for the user to type when
+     * a slide has transitioned.
+     * @param el
+     * @private
+     */
+    function focusElement(el) {
       if (el) {
         setTimeout(function () {
           el.focus();
