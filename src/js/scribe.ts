@@ -5,170 +5,227 @@
  * @author URL:   https://ainsley.dev
  * @author Email: hello@ainsley.dev
  */
-
-import {Validation} from "./validation";
+import {Log} from "./common/log";
 
 const VERSION = "1.0.0";
 
 export class Scribe {
+    /**
+     * Default configuration for scribe.
+     */
+    config: ScribeConfig = {
+        form: ".scribe-form",
+        controls: true,
+        horizontal: false,
+        prevButton: ".scribe-prev",
+        nextButton: ".scribe-next",
+    }
+    /**
+     * The main HTML Form element to use.
+     */
+    form: HTMLFormElement;
+    /**
+     *
+     */
+    list: HTMLLIElement[];
+    /**
+     *
+     */
+    currentSlide: number = 0;
+    /**
+     *
+     */
+    animatingTime = 600;
 
-	// This would be great for options
-	form: HTMLFormElement;
-	list: HTMLLIElement[];
-	validator: Validation
-	currentSlide: number = 0;
-	animatingTime = 600;
+    /**
+     *
+     * @param config
+     */
+    constructor(config?: ScribeConfig) {
+        if (config) {
+            this.config = {...this.config, ...config};
+        }
 
-	// TODO this will be a config struct;
-	constructor(formSelector: string) {
-		const form = document.querySelector("form");
-		if (!form) {
-			console.error(`${formSelector} not found in DOM`);
-			return;
-		}
-		this.form = <HTMLFormElement>form;
+        console.log(this.config);
 
-		this.list = form.querySelectorAll(".scribe-item") as unknown as HTMLLIElement[];
+        // @ts-ignore
+        this.setForm(this.config.form);
 
-		form.addEventListener("submit", e => {
-			e.preventDefault();
-		});
+        this.list = this.form.querySelectorAll(".scribe-item") as unknown as HTMLLIElement[];
 
-		this.validator = new Validation(form);
-		this.listener();
+        this.form.addEventListener("submit", e => {
+            e.preventDefault();
+        });
 
-		this.form.classList.add("scribe-form-loaded");
+        this.listener();
+        this.attachNavigation();
 
-	}
+        this.form.classList.add("scribe-form-loaded");
+    }
 
-	/**
-	 *
-	 * @returns string
-	 */
-	public version(): string {
-		return VERSION
-	}
+    /**
+     *
+     * @returns string
+     */
+    public version(): string {
+        return VERSION
+    }
 
-	goTo(target: number | 'next' | 'prev' | 'first' | 'last'): void {
+    /**
+     *
+     * @param target
+     */
+    public goTo(target: number | 'next' | 'prev' | 'first' | 'last'): void {
+        console.log("go to");
+    }
 
-		console.log("go to");
-	}
+    /**
+     *
+     * @private
+     */
+    private listener(): void {
+        document.addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                this.nextSlide();
+            }
+        });
+    }
 
-	private listener() {
-		document.addEventListener('keypress', e => {
-			if (e.key === 'Enter') {
-				this.nextSlide();
-			}
-		});
+    /**
+     * Goes to the previous slide in the form.
+     * If it's the first slide, the function will exit.
+     * Input elements are autofocused once the animation has been completed.
+     */
+    public previousSlide(): void {
+        if (this.isFirstSlide()) {
+            return;
+        }
 
-		const next = document.querySelector(".scribe-next");
-		if (next) {
-			next.addEventListener("click", e => {
-				e.preventDefault();
-				this.nextSlide();
-			})
-		}
+        const curr = this.list[this.currentSlide],
+            prev = this.list[this.currentSlide - 1];
 
-		const prev = document.querySelector(".scribe-previous");
-		if (prev) {
-			prev.addEventListener("click", e => {
-				e.preventDefault();
-				this.previousSlide();
-			})
-		}
-	}
-	/**
-	 * Goes to the previous slide in the form.
-	 * If it's the first slide, the function will exit.
-	 * Input elements are autofocused once the animation has been completed.
-	 */
-	public previousSlide() {
-		if (this.isFirstSlide()) {
-			return;
-		}
+        prev.classList.add("scribe-item-show");
+        curr.classList.remove("scribe-item-show");
+        curr.classList.add("scribe-item-hide-forwards");
 
-		const curr = this.list[this.currentSlide],
-			prev = this.list[this.currentSlide - 1];
+        this.focusElement(this.getInput(prev));
 
-		prev.classList.add("scribe-item-show");
-		curr.classList.remove("scribe-item-show");
-		curr.classList.add("scribe-item-hide-forwards");
+        this.currentSlide--;
+    }
 
-		this.focusElement(this.getInput(prev));
+    /**
+     * Goes to the next slide in the form.
+     * If it's the last slide, the function will exit.
+     * Input elements are autofocused once the animation has been completed.
+     */
+    public nextSlide(): void {
+        if (this.isLastSlide()) {
+            return;
+        }
 
-		this.currentSlide--;
-	}
-	/**
-	 * Goes to the next slide in the form.
-	 * If it's the last slide, the function will exit.
-	 * Input elements are autofocused once the animation has been completed.
-	 */
-	public nextSlide() {
-		if (this.isLastSlide()) {
-			return;
-		}
+        const curr = this.list[this.currentSlide],
+            next = this.list[this.currentSlide + 1];
 
-		const curr = this.list[this.currentSlide],
-			next = this.list[this.currentSlide + 1];
+        curr.classList.add("scribe-item-hide");
+        curr.classList.remove("scribe-item-show");
+        curr.classList.remove("scribe-item-hide-forwards");
+        next.classList.add("scribe-item-show");
 
-		curr.classList.add("scribe-item-hide");
-		curr.classList.remove("scribe-item-show");
-		curr.classList.remove("scribe-item-hide-forwards");
-		next.classList.add("scribe-item-show");
+        this.focusElement(this.getInput(next));
 
-		this.focusElement(this.getInput(next));
+        this.currentSlide++;
+    }
 
-		this.currentSlide++;
-	}
-	/**
-	 * Determines if the current slide is the first in the form.
-	 * @returns bool
-	 */
-	public isFirstSlide(): boolean {
-		return this.currentSlide === 0;
-	}
-	/**
-	 * Determines if the current slide is the last in the form.
-	 * @returns bool
-	 */
-	public isLastSlide(): boolean {
-		return this.list.length - 1 === this.currentSlide;
-	}
-	/**
-	 * Obtains Scribe information.
-	 * TODO: Add navContainer etc.
-	 * @returns ScribeInfo
-	 */
-	public getInfo(): ScribeInfo {
-		return <ScribeInfo>{
-			index: this.currentSlide,
-			items: this.list.length,
-		}
-	}
-	/**
-	 *
-	 * @returns bool
-	 */
-	public validate(): boolean {
-		return true
-	}
-	/**
-	 * Obtains the input element from a list item.
-	 * @param el
-	 * @private
-	 */
-	private getInput = (el: HTMLElement): HTMLElement | null => el.querySelector("input, textarea, select");
-	/**
-	 * Focuses the HTMLElement, in order for the user to type when
-	 * a slide has transitioned.
-	 * @param el
-	 * @private
-	 */
-	private focusElement(el: HTMLElement | null) {
-		if (el) {
-			setTimeout(() => {
-				el.focus();
-			}, this.animatingTime)
-		}
-	}
+    /**
+     * Determines if the current slide is the first in the form.
+     * @returns bool
+     */
+    public isFirstSlide(): boolean {
+        return this.currentSlide === 0;
+    }
+
+    /**
+     * Determines if the current slide is the last in the form.
+     * @returns bool
+     */
+    public isLastSlide(): boolean {
+        return this.list.length - 1 === this.currentSlide;
+    }
+
+    /**
+     * Obtains Scribe information.
+     * TODO: Add navContainer etc.
+     * @returns ScribeInfo
+     */
+    public getInfo(): ScribeInfo {
+        return <ScribeInfo>{
+            index: this.currentSlide,
+            items: this.list.length,
+        }
+    }
+
+    /**
+     *
+     * @returns bool
+     */
+    public validate(): boolean {
+        return true
+    }
+
+    /**
+     *
+     * @private
+     */
+    private attachNavigation(): void {
+        const next = document.querySelector(".scribe-next");
+        if (next) {
+            next.addEventListener("click", e => {
+                e.preventDefault();
+                this.nextSlide();
+            })
+        }
+        const prev = document.querySelector(".scribe-previous");
+        if (prev) {
+            prev.addEventListener("click", e => {
+                e.preventDefault();
+                this.previousSlide();
+            })
+        }
+    }
+
+    /**
+     * Obtains the input element from a list item.
+     * @param el
+     * @private
+     */
+    private getInput = (el: HTMLElement): HTMLElement | null => el.querySelector("input, textarea, select");
+
+    /**
+     * Focuses the HTMLElement, in order for the user to type when
+     * a slide has transitioned.
+     * @param el
+     * @private
+     */
+    private focusElement(el: HTMLElement | null): void {
+        if (el) {
+            setTimeout(() => {
+                el.focus();
+            }, this.animatingTime)
+        }
+    }
+
+    /**
+     * Sets the form
+     * @param form
+     * @private
+     */
+    private setForm(form: HTMLFormElement | string): void {
+        if (typeof form === "string") {
+            form = document.querySelector(form) as HTMLFormElement;
+        }
+        if (!form) {
+           Log.error(`${form} is not a valid HTMLFormElement`);
+        }
+        this.form = form;
+    }
 }

@@ -18,7 +18,75 @@ __webpack_require__.r(__webpack_exports__);
  * @author Email: hello@ainsley.dev
  */
 
-var scribe = new _scribe__WEBPACK_IMPORTED_MODULE_0__.Scribe(".scribe-form");
+var scribe = new _scribe__WEBPACK_IMPORTED_MODULE_0__.Scribe({
+  form: ".scribe-form"
+});
+
+/***/ }),
+
+/***/ "./src/js/common/log.ts":
+/*!******************************!*\
+  !*** ./src/js/common/log.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Log": () => (/* binding */ Log)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Logger utility class for logging out messages to the
+ * console.
+ */
+var Log = /*#__PURE__*/function () {
+  function Log() {
+    _classCallCheck(this, Log);
+  }
+
+  _createClass(Log, null, [{
+    key: "error",
+    value:
+    /**
+     * Log a console error.
+     * @param message
+     */
+    function error(message) {
+      console.error(this.prefix, message);
+    }
+    /**
+     * Log a console warning,
+     * @param message
+     */
+
+  }, {
+    key: "warn",
+    value: function warn(message) {
+      console.warn(this.prefix, message);
+    }
+    /**
+     * Log a console message.
+     * @param message
+     */
+
+  }, {
+    key: "info",
+    value: function info(message) {
+      console.log(this.prefix, message);
+    }
+  }]);
+
+  return Log;
+}();
+
+_defineProperty(Log, "prefix", "Scribe - ");
 
 /***/ }),
 
@@ -32,7 +100,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Scribe": () => (/* binding */ Scribe)
 /* harmony export */ });
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./validation */ "./src/js/validation.ts");
+/* harmony import */ var _common_log__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common/log */ "./src/js/common/log.ts");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -51,16 +123,44 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var VERSION = "1.0.0";
 var Scribe = /*#__PURE__*/function () {
-  // This would be great for options
-  // TODO this will be a config struct;
-  function Scribe(formSelector) {
+  /**
+   * Default configuration for scribe.
+   */
+
+  /**
+   * The main HTML Form element to use.
+   */
+
+  /**
+   *
+   */
+
+  /**
+   *
+   */
+
+  /**
+   *
+   */
+
+  /**
+   *
+   * @param config
+   */
+  function Scribe(config) {
     _classCallCheck(this, Scribe);
+
+    _defineProperty(this, "config", {
+      form: ".scribe-form",
+      controls: true,
+      horizontal: false,
+      prevButton: ".scribe-prev",
+      nextButton: ".scribe-next"
+    });
 
     _defineProperty(this, "form", void 0);
 
     _defineProperty(this, "list", void 0);
-
-    _defineProperty(this, "validator", void 0);
 
     _defineProperty(this, "currentSlide", 0);
 
@@ -70,20 +170,19 @@ var Scribe = /*#__PURE__*/function () {
       return el.querySelector("input, textarea, select");
     });
 
-    var form = document.querySelector("form");
-
-    if (!form) {
-      console.error("".concat(formSelector, " not found in DOM"));
-      return;
+    if (config) {
+      this.config = _objectSpread(_objectSpread({}, this.config), config);
     }
 
-    this.form = form;
-    this.list = form.querySelectorAll(".scribe-item");
-    form.addEventListener("submit", function (e) {
+    console.log(this.config); // @ts-ignore
+
+    this.setForm(this.config.form);
+    this.list = this.form.querySelectorAll(".scribe-item");
+    this.form.addEventListener("submit", function (e) {
       e.preventDefault();
     });
-    this.validator = new _validation__WEBPACK_IMPORTED_MODULE_0__.Validation(form);
     this.listener();
+    this.attachNavigation();
     this.form.classList.add("scribe-form-loaded");
   }
   /**
@@ -97,11 +196,21 @@ var Scribe = /*#__PURE__*/function () {
     value: function version() {
       return VERSION;
     }
+    /**
+     *
+     * @param target
+     */
+
   }, {
     key: "goTo",
     value: function goTo(target) {
       console.log("go to");
     }
+    /**
+     *
+     * @private
+     */
+
   }, {
     key: "listener",
     value: function listener() {
@@ -112,25 +221,6 @@ var Scribe = /*#__PURE__*/function () {
           _this.nextSlide();
         }
       });
-      var next = document.querySelector(".scribe-next");
-
-      if (next) {
-        next.addEventListener("click", function (e) {
-          e.preventDefault();
-
-          _this.nextSlide();
-        });
-      }
-
-      var prev = document.querySelector(".scribe-previous");
-
-      if (prev) {
-        prev.addEventListener("click", function (e) {
-          e.preventDefault();
-
-          _this.previousSlide();
-        });
-      }
     }
     /**
      * Goes to the previous slide in the form.
@@ -220,6 +310,36 @@ var Scribe = /*#__PURE__*/function () {
       return true;
     }
     /**
+     *
+     * @private
+     */
+
+  }, {
+    key: "attachNavigation",
+    value: function attachNavigation() {
+      var _this2 = this;
+
+      var next = document.querySelector(".scribe-next");
+
+      if (next) {
+        next.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          _this2.nextSlide();
+        });
+      }
+
+      var prev = document.querySelector(".scribe-previous");
+
+      if (prev) {
+        prev.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          _this2.previousSlide();
+        });
+      }
+    }
+    /**
      * Obtains the input element from a list item.
      * @param el
      * @private
@@ -241,70 +361,28 @@ var Scribe = /*#__PURE__*/function () {
         }, this.animatingTime);
       }
     }
-  }]);
+    /**
+     * Sets the form
+     * @param form
+     * @private
+     */
 
-  return Scribe;
-}();
+  }, {
+    key: "setForm",
+    value: function setForm(form) {
+      if (typeof form === "string") {
+        form = document.querySelector(form);
+      }
 
-/***/ }),
+      if (!form) {
+        _common_log__WEBPACK_IMPORTED_MODULE_0__.Log.error("".concat(form, " is not a valid HTMLFormElement"));
+      }
 
-/***/ "./src/js/validation.ts":
-/*!******************************!*\
-  !*** ./src/js/validation.ts ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Validation": () => (/* binding */ Validation)
-/* harmony export */ });
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * validation.js
- * Validation logic for Scribe
- * @author Ainsley Clark
- * @author URL:   https://ainsley.dev
- * @author Email: hello@ainsley.dev
- */
-var Validation = /*#__PURE__*/function () {
-  // Configuration for Pristine.
-  function Validation(form) {
-    _classCallCheck(this, Validation);
-
-    _defineProperty(this, "config", {
-      // Class of the parent element where the error/success class is added
-      classTo: 'form-group',
-      // Class of the parent to add in case of an error.
-      errorClass: 'form-group-error',
-      // Class of the parent to add in case of success.
-      successClass: 'form-group-success',
-      // Class of the parent element where error text element is appended
-      errorTextParent: 'form-group',
-      // Type of element to create for the error text
-      errorTextTag: 'span',
-      // Class of the error text element
-      errorTextClass: 'form-message'
-    });
-
-    _defineProperty(this, "form", void 0);
-  }
-
-  _createClass(Validation, [{
-    key: "validate",
-    value: function validate(el) {
-      var isRequired = el.getAttribute("required");
-      return false; //if (!require())
+      this.form = form;
     }
   }]);
 
-  return Validation;
+  return Scribe;
 }();
 
 /***/ }),
