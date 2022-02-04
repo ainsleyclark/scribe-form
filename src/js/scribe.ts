@@ -8,6 +8,8 @@
 
 import {Validation} from "./validation";
 
+const VERSION = "1.0.0";
+
 export class Scribe {
 
 	// This would be great for options
@@ -37,6 +39,19 @@ export class Scribe {
 
 		this.form.classList.add("scribe-form-loaded");
 
+	}
+
+	/**
+	 *
+	 * @returns string
+	 */
+	public version(): string {
+		return VERSION
+	}
+
+	goTo(target: number | 'next' | 'prev' | 'first' | 'last'): void {
+
+		console.log("go to");
 	}
 
 	private listener() {
@@ -129,6 +144,13 @@ export class Scribe {
 			index: this.currentSlide,
 			items: this.list.length,
 		}
+	}
+	/**
+	 *
+	 * @returns bool
+	 */
+	public validate(): boolean {
+		return true
 	}
 	/**
 	 * Obtains the input element from a list item.

@@ -8,5 +8,5 @@
 
 import {Scribe} from "./scribe";
 
-const scribe = new Scribe(".scribe-form");
+const scribe = new Scribe(".scribe-form") as ScribeInstance;
 

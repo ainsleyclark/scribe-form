@@ -5,7 +5,7 @@ declare interface ScribeInstance {
 	/**
 	 * Version number of scribe.
 	 */
-	version: number;
+	version: string;
 	/**
 	 * Get the info about current tiny-slider instance
 	 */
