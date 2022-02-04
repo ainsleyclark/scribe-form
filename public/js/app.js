@@ -49,6 +49,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @author Email: hello@ainsley.dev
  */
 
+var VERSION = "1.0.0";
 var Scribe = /*#__PURE__*/function () {
   // This would be great for options
   // TODO this will be a config struct;
@@ -85,8 +86,23 @@ var Scribe = /*#__PURE__*/function () {
     this.listener();
     this.form.classList.add("scribe-form-loaded");
   }
+  /**
+   *
+   * @returns string
+   */
+
 
   _createClass(Scribe, [{
+    key: "version",
+    value: function version() {
+      return VERSION;
+    }
+  }, {
+    key: "goTo",
+    value: function goTo(target) {
+      console.log("go to");
+    }
+  }, {
     key: "listener",
     value: function listener() {
       var _this = this;
@@ -179,10 +195,29 @@ var Scribe = /*#__PURE__*/function () {
     value: function isLastSlide() {
       return this.list.length - 1 === this.currentSlide;
     }
+    /**
+     * Obtains Scribe information.
+     * TODO: Add navContainer etc.
+     * @returns ScribeInfo
+     */
+
   }, {
     key: "getInfo",
     value: function getInfo() {
-      return {};
+      return {
+        index: this.currentSlide,
+        items: this.list.length
+      };
+    }
+    /**
+     *
+     * @returns bool
+     */
+
+  }, {
+    key: "validate",
+    value: function validate() {
+      return true;
     }
     /**
      * Obtains the input element from a list item.

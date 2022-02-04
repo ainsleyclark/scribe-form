@@ -5,7 +5,7 @@ declare interface ScribeInstance {
 	/**
 	 * Version number of scribe.
 	 */
-	version: string;
+	version(): string;
 	/**
 	 * Get the info about current tiny-slider instance
 	 */
@@ -76,3 +76,4 @@ declare interface ScribeInfo {
 	items: number;
 	navContainer?: HTMLElement
 }
+
