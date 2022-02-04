@@ -1,22 +1,28 @@
 {
-  "name": "scribe-form",
-  "version": "1.0.0",
-  "description": "Full screen form",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ainsleyclark/scribe-form.git"
-  },
-  "author": "Ainsley Clark",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ainsleyclark/scribe-form/issues"
-  },
-  "homepage": "https://github.com/ainsleyclark/scribe-form#readme",
-  "dependencies": {
-    "esbuild": "^0.14.18"
-  }
+	"name": "scribe-form",
+	"version": "1.0.0",
+	"description": "Full screen form",
+	"main": "index.js",
+	"scripts": {
+		"prod": "node config/esbuild.prod.js -production",
+		"production": "npm run production",
+		"watch": "node config/esbuild.watch.js",
+		"serve": "npm run watch"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ainsleyclark/scribe-form.git"
+	},
+	"author": "Ainsley Clark",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/ainsleyclark/scribe-form/issues"
+	},
+	"homepage": "https://github.com/ainsleyclark/scribe-form#readme",
+	"devDependencies": {
+		"browser-sync": "^2.27.7",
+		"esbuild": "^0.14.18",
+		"esbuild-plugin-sass": "^1.0.1",
+		"esbuild-serve": "^1.0.1"
+	}
 }
