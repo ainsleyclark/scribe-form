@@ -43,3 +43,10 @@ export class Validation {
 	// 	 //if (!require())
 	// }
 }
+
+abstract class Validate {
+
+    validate() {
+
+    }
+}

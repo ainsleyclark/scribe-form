@@ -10,4 +10,5 @@ import {Scribe} from "./scribe";
 
 new Scribe({
     form: ".scribe-form",
+    size: "50vw",
 }) as ScribeInstance;

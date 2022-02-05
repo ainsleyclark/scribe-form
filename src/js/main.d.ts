@@ -47,6 +47,15 @@ declare interface ScribeConfig {
      */
     form?: HTMLFormElement | string;
     /**
+     * The amount of ms to animate the questions
+     * @defaultValue 600
+     */
+    speed?: number
+    /**
+     * TODO
+     */
+    size?: string
+    /**
      * Controls the display and functionalities of controls components (prev/next buttons).
      * If true, display the controls and add all functionalities.
      * @defaultValue true
@@ -80,6 +89,7 @@ declare interface ScribeConfig {
 declare interface ScribeInfo {
     index: number;
     items: number;
+    progress: number,
     navContainer?: HTMLElement
 }
 

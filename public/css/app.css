@@ -446,6 +446,8 @@ body {
   border: none;
 }
 .scribe-question:not(:first-child) {
-  transform: translateY(100vh);
   opacity: 0;
+}
+.scribe-active {
+  z-index: 99;
 }

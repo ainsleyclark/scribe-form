@@ -6,55 +6,36 @@
 		<link rel="preload" href="/js/app.js" as="script">
 	</head>
 	<body>
-
+		<!-- Header -->
+		<header>
+			<h1>Scribe Form</h1>
+		</header>
 		<!-- Controls -->
 		<div class="scribe-controls">
 			<button class="scribe-previous">Prev</button>
 			<button class="scribe-next">Next</button>
 		</div>
-
 		<!-- Form -->
 		<form class="scribe-form" autocomplete="off" novalidate>
 			<!-- First Name -->
-			<fieldset class="scribe-question">
+			<fieldset class="scribe-question" data-scribe-type="text">
 				<label for="q1">What's your first name?</label>
-				<p class="scribe-subtext">Enter your first name for our records</p>
 				<input id="q1" name="first-name" type="text" required />
-				<!-- This will be prepended the javascript -->
-				<div class="scribe-submit">
-					<button class="scribe-ok">Ok</button>
-					<span>press Enter ↵</span>
-				</div>
 			</fieldset>
 			<!-- First Name -->
-			<fieldset class="scribe-question" data-scribe-question="text">
+			<fieldset class="scribe-question" data-scribe-type="text">
 				<label for="q4">What's your message?</label>
-				<textarea id="q4" name="message" rows="8"></textarea>
-				<!-- This will be prepended the javascript -->
-				<div class="scribe-submit">
-					<button class="scribe-ok">Ok</button>
-					<span>press Enter ↵</span>
-				</div>
+				<textarea id="q4" name="message"></textarea>
 			</fieldset>
 			<!-- Last Name -->
-			<fieldset class="scribe-question">
+			<fieldset class="scribe-question" data-scribe-type="text">
 				<label for="q2">What's your last name?</label>
 				<input id="q2" name="last-name" type="text"  />
-				<!-- This will be prepended the javascript -->
-				<div class="scribe-submit">
-					<button class="scribe-ok">Ok</button>
-					<span>press Enter ↵</span>
-				</div>
 			</fieldset>
 			<!-- Name -->
-			<fieldset class="scribe-question">
+			<fieldset class="scribe-question" data-scribe-type="text">
 				<label for="q3">What's your email?</label>
-				<input id="q3" name="last-name" type="text" />
-				<!-- This will be prepended the javascript -->
-				<div class="scribe-submit">
-					<button class="scribe-ok">Ok</button>
-					<span>press Enter ↵</span>
-				</div>
+				<input id="q3" name="email" type="text" />
 			</fieldset>
 		</form>
 		<script src="/js/app.js"></script>

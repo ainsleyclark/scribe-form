@@ -14,7 +14,6 @@ body {
 .scribe {
 	$self: &;
 
-
 	&-controls {
 		position: fixed;
 		bottom: 1rem;
@@ -56,8 +55,11 @@ body {
 		border: none;
 
 		&:not(:first-child) {
-			transform: translateY(100vh);
 			opacity: 0;
 		}
+	}
+
+	&-active {
+		z-index: 99;
 	}
 }

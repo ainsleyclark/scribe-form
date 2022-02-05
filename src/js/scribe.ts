@@ -8,23 +8,28 @@
 
 import {Log} from "./common/log";
 import Classes from "./common/classes";
+import {QuestionText} from "./questions/text";
 
 const VERSION = "1.0.0";
 
+/**
+ * TODO
+ */
+enum Direction {
+    Next = 'next',
+    Previous = 'prev',
+    First = 'first',
+    Last = 'last',
+}
+
 export class Scribe {
-
-
-
-    pixels: "400px";
-
-    isAnimating: boolean;
-
-
     /**
      * Default configuration for scribe.
      */
     config: ScribeConfig = {
         form: ".scribe-form",
+        speed: 600,
+        size: "100vh",
         controls: true,
         horizontal: false,
         okButton: ".scribe-ok",
@@ -40,11 +45,15 @@ export class Scribe {
      */
     list: HTMLLIElement[];
     /**
-     *
+     * TODO
      */
     currentSlide = 0;
     /**
-     *
+     * TODO
+     */
+    burst = 0;
+    /**
+     * TODO
      */
     animatingTime = 600;
 
@@ -68,11 +77,13 @@ export class Scribe {
         });
 
         this.listener();
-        this.attachNavigation();
-        this.attachOk();
+        this.attachControls();
+       //x this.attachOk();
         this.addClasses();
 
-     //   this.focusElement(this.getInput(this.list[0]), true)
+        new QuestionText(this.form);
+
+     //   this.focusElement(this.getInput(this.list[0]))
     }
 
     /**
@@ -93,22 +104,21 @@ export class Scribe {
             return;
         }
         switch (target as string) {
-            case 'next':
+            case Direction.Next:
                 this.animate(this.currentSlide + 1);
                 break;
-            case 'prev':
+            case Direction.Previous:
                 this.animate(this.currentSlide - 1);
                 break;
-            case 'first':
+            case Direction.First:
                 this.animate(0);
                 break;
-            case 'last':
+            case Direction.Last:
                 this.animate(this.list.length);
                 break;
             default:
                 Log.error("Target should be 'next', 'prev', 'first', 'last' or index");
         }
-        Log.error("Target should be a string or number")
     }
 
     /**
@@ -155,7 +165,21 @@ export class Scribe {
         return <ScribeInfo>{
             index: this.currentSlide,
             items: this.list.length,
+            progress: this.progress(),
         }
+    }
+
+    // on(event,callback) {
+    //     if(!_triggers[event])
+    //         _triggers[event] = [];
+    //     _triggers[event].push( callback );
+    // }
+
+    /**
+     *
+     */
+    private progress(): number {
+        return (this.currentSlide / this.list.length) * 100
     }
 
     /**
@@ -166,6 +190,10 @@ export class Scribe {
         return true
     }
 
+    /**
+     *
+     * @private
+     */
     private addClasses() {
         this.list.forEach((el, index) => {
             if (index === 0) {
@@ -173,6 +201,7 @@ export class Scribe {
                 el.ariaHidden = 'false';
             } else {
                 el.ariaHidden = 'true';
+                el.style.transform = `translate3d(0,${this.config.size},0)`
             }
         });
         this.form.classList.add('scribe-form-loaded');
@@ -180,16 +209,11 @@ export class Scribe {
 
     /**
      *
-     * @param slideIn
-     * @param slideOut
      * @private
+     * @param to
      */
     private animate(to: number) {
-        // TODO Sanity check array
-        const next = this.list[to],
-            curr = this.list[this.currentSlide],
-            isForwards = to > this.currentSlide;
-
+        const isForwards = to > this.currentSlide;
         if (isForwards && this.isLastSlide()) {
             return
         }
@@ -198,20 +222,26 @@ export class Scribe {
             return;
         }
 
-        let currTransform = 'translate3d(0,100vh,0)';
+        // TODO Sanity check array
+        const next = this.list[to],
+            curr = this.list[this.currentSlide];
+
+        this.burst++
+
+        let currTransform = `translate3d(0,${this.config.size},0)`;
         if (isForwards) {
-            currTransform = 'translate3d(0,-100vh,0)';
+            currTransform = `translate3d(0,-${this.config.size},0)`;
         }
 
         curr.style.transform = currTransform;
         curr.style.opacity = '0';
         curr.ariaHidden = 'true';
-        Classes.remove(curr,'scribe-active');
+        Classes.remove(curr, 'scribe-active');
 
         next.style.transform = 'translate3d(0,0,0)';
         next.style.opacity = '1';
         next.ariaHidden = 'false';
-        Classes.remove(next, 'scribe-active');
+        Classes.add(next, 'scribe-active');
 
         if (isForwards) {
             this.currentSlide++;
@@ -222,35 +252,43 @@ export class Scribe {
         this.focusElement(this.getInput(next));
     }
 
+
     /**
      *
      * @private
      */
-    private attachNavigation(): void {
+    private attachControls(): void {
+        if (!this.config.controls) {
+            return;
+        }
         const next = document.querySelector(".scribe-next");
         if (next) {
             next.addEventListener("click", e => {
                 e.preventDefault();
-                this.goTo('next');
-            })
+                this.goTo(Direction.Next);
+            });
         }
         const prev = document.querySelector(".scribe-previous");
         if (prev) {
             prev.addEventListener("click", e => {
                 e.preventDefault();
-                this.goTo('prev');
-            })
+                this.goTo(Direction.Previous);
+            });
         }
     }
 
-    private attachOk(): void {
-        if (!this.config.okButton) {
-            return;
-        }
-        this.form.querySelectorAll(this.config.okButton).forEach(btn => {
-            btn.addEventListener("click", () => this.goTo('next'));
-        })
-    }
+    /**
+     *
+     * @private
+     */
+    // private attachOk(): void {
+    //     if (!this.config.okButton) {
+    //         return;
+    //     }
+    //     this.form.querySelectorAll(this.config.okButton).forEach(btn => {
+    //         btn.addEventListener("click", () => this.goTo('next'));
+    //     })
+    // }
 
     /**
      * Obtains the input element from a list item.
@@ -263,20 +301,18 @@ export class Scribe {
      * Focuses the HTMLElement, in order for the user to type when
      * a slide has transitioned.
      * @param el
-     * @param timeout
      * @private
      */
-    private focusElement(el: HTMLElement | null, timeout = true): void {
+    private focusElement(el: HTMLElement | null): void {
         if (!el) {
             return;
         }
-        if (!timeout) {
-            el.focus();
-            return;
-        }
         setTimeout(() => {
-          //  el.focus();
-        }, this.animatingTime)
+            this.burst--
+            if (this.burst === 0) {
+                el.focus();
+            }
+        }, this.animatingTime - 100)
     }
 
     /**
@@ -289,7 +325,7 @@ export class Scribe {
             form = document.querySelector(form) as HTMLFormElement;
         }
         if (!form) {
-           Log.error(`${form} is not a valid HTMLFormElement`);
+            Log.error(`${form} is not a valid HTMLFormElement`);
         }
         this.form = form;
     }
