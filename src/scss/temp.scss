@@ -19,19 +19,22 @@ body {
 		position: absolute;
 		bottom: 1rem;
 		right: 1rem;
+		z-index: 99;
 	}
 
 	&-form {
+		position: relative;
 		display: flex;
 		align-items: center;
-		width: 80vw;
+		flex-direction: column;
+		width: 70%;
 		height: 100%;
 		min-height: 100vh;
 		margin: 0 auto;
 
 		&-loaded {
 
-			#{$self}-item {
+			#{$self}-question {
 				transition: transform 600ms ease 0s, opacity 300ms ease 0s;
 				will-change: transform, opacity;
 			}
@@ -51,7 +54,7 @@ body {
 		padding: 0 2rem;
 	}
 
-	&-item {
+	&-question {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -62,7 +65,8 @@ body {
 		height: 100%;
 		min-height: 100vh;
 		margin: 0;
-		list-style-type: none;
+		padding: 0;
+		border: none;
 
 		&:not(:first-child) {
 			transform: translateY(100vh);

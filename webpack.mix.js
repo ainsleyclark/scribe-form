@@ -37,7 +37,7 @@ if (mix.inProduction()) {
 }
 
 /**
- * Watch
+ * Dev/Watch Vars
  */
 mix.sourceMaps();
 

@@ -52,7 +52,7 @@ export class Scribe {
         // @ts-ignore
         this.setForm(this.config.form);
 
-        this.list = this.form.querySelectorAll(".scribe-item") as unknown as HTMLLIElement[];
+        this.list = this.form.querySelectorAll(".scribe-question") as unknown as HTMLLIElement[];
 
         this.form.addEventListener("submit", e => {
             e.preventDefault();
@@ -105,24 +105,17 @@ export class Scribe {
      */
     private listener(): void {
         document.addEventListener('keypress', e => {
-            if (e.key === 'Enter') {
+            const isEnter = e.key === 'Enter';
+            if (e.shiftKey && isEnter && e.target instanceof HTMLTextAreaElement) {
+                e.preventDefault();
+                e.target.value += "\n";
+                return;
+            }
+            if (isEnter) {
+                e.preventDefault();
                 this.nextSlide();
             }
         });
-
-        // TODO move to seperate func
-        //this.form.querySelectorAll("textarea").forEach(text => {
-           // text.addEventListener("keypress", e => {
-           //     if (e.key === 'Enter') {
-           //         this.nextSlide();
-           //     }
-           // })
-           //  text.addEventListener("keydown", e => {
-           //      if (e.shiftKey && e.key === 'Enter') {
-           //          text.value += "\n";
-           //      }
-           //  })
-       // });
     }
 
     /**
@@ -139,9 +132,9 @@ export class Scribe {
             prev = this.list[this.currentSlide - 1];
 
         // TODO: Broken here. Adding unecessary classes.
-        prev.classList.add("scribe-item-show");
-        curr.classList.remove("scribe-item-show");
-        curr.classList.add("scribe-item-hide-forwards");
+        prev.classList.add("scribe-question-show");
+        curr.classList.remove("scribe-question-show");
+        curr.classList.add("scribe-question-hide-forwards");
 
         this.focusElement(this.getInput(prev));
 
@@ -161,10 +154,10 @@ export class Scribe {
         const curr = this.list[this.currentSlide],
             next = this.list[this.currentSlide + 1];
 
-        curr.classList.add("scribe-item-hide");
-        curr.classList.remove("scribe-item-show");
-        curr.classList.remove("scribe-item-hide-forwards");
-        next.classList.add("scribe-item-show");
+        curr.classList.add("scribe-question-hide");
+        curr.classList.remove("scribe-question-show");
+        curr.classList.remove("scribe-question-hide-forwards");
+        next.classList.add("scribe-question-show");
 
         this.focusElement(this.getInput(next));
 

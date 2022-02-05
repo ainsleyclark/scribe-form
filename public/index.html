@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-gb">
+<html lang="en-gb" xmlns="http://www.w3.org/1999/html">
 	<head>
 		<title>Scribe Form</title>
 		<link rel="stylesheet" href="/css/app.css">
@@ -10,60 +10,59 @@
 			<h1>Scribe Form</h1>
 		</header>
 
+		<!-- Controls -->
 		<div class="scribe-controls">
 			<button class="scribe-previous">Prev</button>
 			<button class="scribe-next">Next</button>
 		</div>
 
+		<!-- Form -->
 		<form class="scribe-form" autocomplete="off" novalidate>
-			<ol class="scribe-list">
-				<!-- First Name -->
-				<li class="scribe-item">
-					<div class="scribe-question">
-						<label for="q1">What's your first name?</label>
-						<p class="scribe-subtext">Enter your first name for our records</p>
-					</div>
-					<input id="q1" name="first-name" type="text" required />
-					<!-- This will be prepended the javascript -->
-					<div class="scribe-submit">
-						<button class="scribe-ok">Ok</button>
-						<span>press Enter ↵</span>
-					</div>
-				</li>
-				<!-- Message -->
-<!--				<li class="scribe-item">-->
-<!--					<label for="q4">What's the message?</label>-->
-<!--					<textarea id="q4" name="message" rows="8"></textarea>-->
-<!--					&lt;!&ndash; This will be prepended the javascript-->
-<!--					  TODO press shift and enter to make a new line-->
-<!--					 &ndash;&gt;-->
-<!--					<div class="scribe-submit">-->
-<!--						<button class="scribe-ok">Ok</button>-->
-<!--						<span>press Enter ↵</span>-->
-<!--					</div>-->
-<!--				</li>-->
-				<!-- Last Name -->
-				<li class="scribe-item">
-					<label for="q2">What's your last name?</label>
-					<input id="q2" name="last-name" type="text"  />
-					<!-- This will be prepended the javascript -->
-					<div class="scribe-submit">
-						<button class="scribe-ok">Ok</button>
-						<span>press Enter ↵</span>
-					</div>
-				</li>
-				<!-- Name -->
-				<li class="scribe-item">
-					<label for="q3">What's your email?</label>
-					<input id="q3" name="last-name" type="text" />
-					<!-- This will be prepended the javascript -->
-					<div class="scribe-submit">
-						<button class="scribe-ok">Ok</button>
-						<span>press Enter ↵</span>
-					</div>
-				</li>
-			</ol><!-- /Name -->
+			<!-- First Name -->
+<!--			<fieldset class="scribe-question">-->
+<!--				<label for="q1">What's your first name?</label>-->
+<!--				<p class="scribe-subtext">Enter your first name for our records</p>-->
+<!--				<input id="q1" name="first-name" type="text" required />-->
+<!--				&lt;!&ndash; This will be prepended the javascript &ndash;&gt;-->
+<!--				<div class="scribe-submit">-->
+<!--					<button class="scribe-ok">Ok</button>-->
+<!--					<span>press Enter ↵</span>-->
+<!--				</div>-->
+<!--			</fieldset>-->
+			<!-- First Name -->
+			<fieldset class="scribe-question" data-scribe-question="text">
+				<label for="q4">What's your message?</label>
+				<textarea id="q4" name="message" rows="8"></textarea>
+				<!-- This will be prepended the javascript -->
+				<div class="scribe-submit">
+					<button class="scribe-ok">Ok</button>
+					<span>press Enter ↵</span>
+				</div>
+			</fieldset>
+			<!-- Last Name -->
+			<fieldset class="scribe-question">
+				<label for="q2">What's your last name?</label>
+				<input id="q2" name="last-name" type="text"  />
+				<!-- This will be prepended the javascript -->
+				<div class="scribe-submit">
+					<button class="scribe-ok">Ok</button>
+					<span>press Enter ↵</span>
+				</div>
+			</fieldset>
+<!--			&lt;!&ndash; Name &ndash;&gt;-->
+<!--			<fieldset class="scribe-question">-->
+<!--				<label for="q3">What's your email?</label>-->
+<!--				<input id="q3" name="last-name" type="text" />-->
+<!--				&lt;!&ndash; This will be prepended the javascript &ndash;&gt;-->
+<!--				<div class="scribe-submit">-->
+<!--					<button class="scribe-ok">Ok</button>-->
+<!--					<span>press Enter ↵</span>-->
+<!--				</div>-->
+<!--			</fieldset>-->
 		</form>
 		<script src="/js/app.js"></script>
 	</body>
 </html>
+
+
+<!-- Message -->
