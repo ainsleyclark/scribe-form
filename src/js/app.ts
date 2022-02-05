@@ -8,6 +8,6 @@
 
 import {Scribe} from "./scribe";
 
-const scribe = new Scribe({
+new Scribe({
     form: ".scribe-form",
 }) as ScribeInstance;

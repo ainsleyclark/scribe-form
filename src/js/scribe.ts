@@ -33,7 +33,7 @@ export class Scribe {
     /**
      *
      */
-    currentSlide: number = 0;
+    currentSlide = 0;
     /**
      *
      */
@@ -251,7 +251,7 @@ export class Scribe {
      * @param timeout
      * @private
      */
-    private focusElement(el: HTMLElement | null, timeout: boolean = true): void {
+    private focusElement(el: HTMLElement | null, timeout = true): void {
         if (!el) {
             return;
         }

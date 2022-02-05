@@ -11,7 +11,6 @@
 
 /**
  * Require & Import
- *
  */
 const mix = require('laravel-mix');
 
@@ -22,13 +21,39 @@ mix.setPublicPath('public')
 
 /**
  * Javascript
- * Compiles all JS to public
  */
 mix.ts('src/js/app.ts', 'public/js/app.js');
 
 /**
  * SCSS
- * Compiles all SCSS files to public and uses Sass lint.
- *
  */
 mix.sass('src/scss/app.scss', 'public/css/app.css')
+
+/**
+ * Prod
+ */
+if (mix.inProduction()) {
+    return;
+}
+
+/**
+ * Watch
+ */
+mix.sourceMaps();
+
+/**
+ * BrowserSync
+ */
+mix.browserSync({
+    startPath: "/", 			// Initial path
+    port: 8080, 				// Port number
+    logLevel: "silent", 		// Log level
+    logFileChanges: true, 		// Log file changes
+    notify: false, 				// Small pop-up notifications in the browser
+    single: true, 				// Provide separate index.html
+    server: {
+        baseDir: "public", 		// Base Folder
+        index: "index.html", 	// Set the server's entry file
+    },
+    files: ["src/", "public/*.html"], // Listening to files under src
+})
