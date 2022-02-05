@@ -19,20 +19,6 @@ declare interface ScribeInstance {
     goTo(target: number | 'next' | 'prev' | 'first' | 'last'): void,
 
     /**
-     * Goes to the previous slide in the form.
-     * If it's the first slide, the function will exit.
-     * Input elements are autofocused once the animation has been completed.
-     */
-    previousSlide(): void
-
-    /**
-     * Goes to the next slide in the form.
-     * If it's the last slide, the function will exit.
-     * Input elements are autofocused once the animation has been completed.
-     */
-    nextSlide(): void
-
-    /**
      * Determines if the current slide is the first in the form.
      * @returns bool
      */
