@@ -19,7 +19,7 @@ export interface DataAttributes {
     equals?: string
 }
 
-const DATA_ATTRIBUTE = "validate"
+export const DATA_ATTRIBUTE = "validate"
 
 
 /**
@@ -70,7 +70,7 @@ export class Validation {
      * @param form
      */
     constructor(form: HTMLFormElement) {
-        const test = document.querySelector("")
+
     }
 
     /**
@@ -123,7 +123,7 @@ export class Validation {
      */
     private getDataAttributes(field: HTMLElement): DataAttributes {
         return <DataAttributes>{
-            required: !!(field.getAttribute(`data-${DATA_ATTRIBUTE}-required`) || field.getAttribute("required")),
+            required: field.hasAttribute(`data-${DATA_ATTRIBUTE}-required`) || field.hasAttribute("required"),
             email: field.getAttribute(`data-${DATA_ATTRIBUTE}-type`) === 'email' || field.getAttribute("type") === 'email',
             number: field.getAttribute(`data-${DATA_ATTRIBUTE}-type`) === 'number' || field.getAttribute("type") === 'number',
             minLength: (field.getAttribute(`data-${DATA_ATTRIBUTE}-minlength`) || field.getAttribute("minlength")) as Number | null,
