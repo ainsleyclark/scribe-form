@@ -22,6 +22,38 @@ const test: Record<string, Validator> = {
 			return value !== undefined && value !== '';
 		}
 	},
+	'email': {
+		priority: 1,
+		validate: (el: HTMLInputElement): boolean => {
+			return !!el.value.match(
+				/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+			);
+		}
+	},
+	'number': {
+		priority: 2,
+		validate: (el: HTMLInputElement): boolean => {
+			return !el.value || !isNaN(parseFloat(el.value));
+		}
+	},
+	'url': {
+		priority: 3,
+		validate: (el: HTMLInputElement): boolean => {
+			try {
+				new URL(el.value);
+			} catch (_) {
+				return false;
+			}
+			return true;
+		}
+	},
+	'minLength': {
+		priority: 4,
+		validate: (el: HTMLInputElement): boolean => {
+			const value = el.value;
+			return true;
+		}
+	},
 }
 
 /**

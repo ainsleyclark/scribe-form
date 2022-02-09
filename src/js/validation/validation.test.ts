@@ -5,9 +5,9 @@ const val = new Validation(document.createElement("form")) as any;
 
 
 test('adds 1 + 2 to equal 3', () => {
-    const el = document.createElement("input")
-    el.setAttribute(`data-validate-required`, 'required')
-    console.log("in test", el);
+    const el = document.createElement("input");
+    el.setAttribute(`data-validate-required`, 'required');
+
     expect(val.getDataAttributes(el)).toStrictEqual({
         "required": true,
         "email": false,
