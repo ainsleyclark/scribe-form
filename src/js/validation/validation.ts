@@ -5,6 +5,8 @@
  * @author URL:   https://ainsley.dev
  * @author Email: hello@ainsley.dev
  */
+import {tests, Validator} from "./tests";
+import Classes from "../common/classes";
 
 
 export interface DataAttributes {
@@ -30,7 +32,7 @@ export interface Messages {
 	equals: string,
 }
 
-export const DATA_ATTRIBUTE = "validate"
+export const DATA_ATTRIBUTE = "scribe"
 
 const ALLOWED_ATTRIBUTES = ["required", "min", "max", 'minlength', 'maxlength', 'pattern'];
 
@@ -78,6 +80,8 @@ export class Validation {
 		complete: 'input is not complete'
 	}
 
+	form: HTMLFormElement
+
 	/**
 	 *
 	 * @param form
@@ -93,7 +97,7 @@ export class Validation {
 	/**
 	 * @returns boolean
 	 */
-	public validateAll(): boolean {
+	public validate(): boolean {
 		return false
 	}
 
@@ -103,53 +107,113 @@ export class Validation {
 	 * @param silent - Don't mark the field, only return if it passed validation.
 	 * @returns boolean
 	 */
-	public checkField(field: HTMLElement, silent = false): boolean {
+	public validateField(field: HTMLElement, silent = false): boolean {
+
+		const validators = this.getDataAttributes(field);
+
+
+		validators.forEach(validator => {
+
+			//validator.validate(el, )
+		});
 		return false
 	}
 
+	// TODO: Events
+
 	/**
-	 *
+	 * Resets the form validation removing any invalid messages,
+	 * and error classes from the form.
+	 * @returns void
 	 */
 	public reset(): void {
-
+		// TODO
+		this.form.querySelectorAll("")
 	}
 
 	/**
-	 *
+	 * Mark the field container invalid and adds a message to the
+	 * end of the containers HTML.
 	 * @param field
+	 * @param message
+	 * @returns void
 	 * @private
 	 */
-	private mark(field: HTMLElement): void {
+	private mark(field: HTMLElement, message: string): void {
+		const container = <HTMLElement>field.closest(this.config.classTo)
+		if (!container) {
+			return;
+		}
 
+		// Bail if the validation already has been marked as invalid.
+		if (Classes.has(container, this.config.errorClass)) {
+			return;
+		}
+
+		// Append the error message to the container.
+		container.insertAdjacentHTML('beforeend', `<span class="${this.config.errorClass}">${message}</span>`);
+
+		// Add the error class to the container, add a delay, so it can be
+		// transitioned via CSS.
+		setTimeout(() => {
+			Classes.add(container, this.config.errorClass);
+		}, 10);
 	}
 
 	/**
-	 *
+	 * Unmark the field as invalid and removes the message from
+	 * the DOM.
 	 * @param field
+	 * @returns void
 	 * @private
 	 */
 	private unmark(field: HTMLElement): void {
+		const container = <HTMLElement>field.closest(this.config.classTo)
+		if (!container) {
+			return;
+		}
 
+		// Remove the error class from the container.
+		Classes.remove(container, this.config.errorClass);
+
+		// Remove the message field from the DOM.
+		const message = container.querySelector(this.config.errorClass);
+		if (message) {
+			container.removeChild(message);
+		}
 	}
 
 	/**
 	 *
 	 * @param field
+	 * @returns TODO
 	 * @private
 	 */
-	private getDataAttributes(field: HTMLElement): DataAttributes {
+	public getDataAttributes(field: HTMLElement): Validator[] {
 
 
-		let params = {},
-			messages = {} as any
+		let validators: Validator[] = [];
 
+
+		let test = {} as any;
 
 		Array.from(field.attributes).forEach(attr => {
-			const reg = new RegExp(`/data-${DATA_ATTRIBUTE}-/`);
+			const reg = new RegExp(`^data-${DATA_ATTRIBUTE}-`);
 			if (reg.test(attr.name)) {
-				let name = attr.name.substr(14);
+				let name = <string>attr.name.substr(12);
+
+				const validator = tests[name];
+
+				if (validator) {
+					validators.push(validator);
+
+
+					test[name] = validator;
+				}
+
+
 				if (name === "message") {
-					messages["test"] = attr.value;
+				//	validator.message = attr.value;
 				}
 
 			} else if (~ALLOWED_ATTRIBUTES.indexOf(attr.name)) {
@@ -158,10 +222,15 @@ export class Validation {
 
 			}
 
-			console.log(`${attr.nodeName}=${attr.nodeValue}`);
+			//console.log(`${attr.nodeName}=${attr.nodeValue}`);
 		})
 
+		validators.sort((a, b) => a.priority - b.priority);
 
+		return validators;
+	}
+
+	private temp(field: HTMLElement): DataAttributes {
 		return <DataAttributes>{
 			required: field.hasAttribute(`data-${DATA_ATTRIBUTE}-required`) || field.hasAttribute("required"),
 			email: field.getAttribute(`data-${DATA_ATTRIBUTE}-type`) === 'email' || field.getAttribute("type") === 'email',
@@ -175,5 +244,15 @@ export class Validation {
 			equals: field.getAttribute(`data-${DATA_ATTRIBUTE}-equals`) || field.getAttribute("equals"),
 		}
 	}
+
+	// private getMessage(field: HTMLElement): string {
+	// 	const attr = field.getAttribute(`data-${DATA_ATTRIBUTE}-message`);
+	// 	if (attr) {
+	// 		return attr
+	// 	}
+	// }
 }
+
+
+
 

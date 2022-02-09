@@ -3,18 +3,17 @@
  */
 import {DataAttributes, Messages} from "./validation";
 import {Log} from "../common/log";
-import any = jasmine.any;
 
-
-interface Validator {
-	priority?: number,
-	validate: (el: HTMLInputElement) => boolean
+export interface Validator {
+	priority: number,
+	validate: (el: HTMLInputElement, attr: DataAttributes) => boolean
+	message?: string
 }
 
-const test: Record<string, Validator> = {
+export const tests: Record<string, Validator> = {
 	'required': {
 		priority: 0,
-		validate: (el: HTMLInputElement): boolean => {
+		validate: (el: HTMLInputElement, attr: DataAttributes): boolean => {
 			const value = el.value;
 			if (el.type === 'radio' || el.type === 'checkbox') {
 
@@ -24,7 +23,7 @@ const test: Record<string, Validator> = {
 	},
 	'email': {
 		priority: 1,
-		validate: (el: HTMLInputElement): boolean => {
+		validate: (el: HTMLInputElement, attr: DataAttributes): boolean => {
 			return !!el.value.match(
 				/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 			);
@@ -32,13 +31,13 @@ const test: Record<string, Validator> = {
 	},
 	'number': {
 		priority: 2,
-		validate: (el: HTMLInputElement): boolean => {
+		validate: (el: HTMLInputElement, attr: DataAttributes): boolean => {
 			return !el.value || !isNaN(parseFloat(el.value));
 		}
 	},
 	'url': {
 		priority: 3,
-		validate: (el: HTMLInputElement): boolean => {
+		validate: (el: HTMLInputElement, attr: DataAttributes): boolean => {
 			try {
 				new URL(el.value);
 			} catch (_) {
@@ -49,7 +48,7 @@ const test: Record<string, Validator> = {
 	},
 	'minLength': {
 		priority: 4,
-		validate: (el: HTMLInputElement): boolean => {
+		validate: (el: HTMLInputElement, attr: DataAttributes): boolean => {
 			const value = el.value;
 			return true;
 		}
