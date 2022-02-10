@@ -8,41 +8,11 @@
 
 import {tests, ValidateFn, Validator} from "./tests";
 import Classes from "../common/classes";
-import {lang} from "./lang";
-import {isEmptyObject, tmpl} from "./util";
 import {Log} from "../common/log";
-
+import {ValidationElement} from "./element";
 
 export const DATA_ATTRIBUTE = "scribe"
-const ALLOWED_ATTRIBUTES = ['required', 'min', 'max', 'minlength', 'maxlength', 'pattern'],
-	SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, select"
-
-/**
- *
- */
-interface ScribeHTMLElement extends HTMLElement {
-	scribe?: ScribeValidation
-}
-
-/**
- *
- */
-interface ScribeValidation {
-	input: ScribeHTMLElement,
-	validators: Validator[],
-	params: { [key: string]: string },
-	messages: Map<string, string>,
-	errors: ScribeValidationErrors
-}
-
-
-
-/**
- *
- */
-interface ScribeValidationErrors {
-	[key: string]: string
-}
+const SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, select"
 
 /**
  *
@@ -72,16 +42,13 @@ export class Validation {
 	/**
 	 *
 	 */
-	fields: ScribeValidation[]
+	fields: ValidationElement[]
 
 	/**
 	 *
 	 * @param form
 	 */
 	constructor(form: HTMLFormElement) {
-		// Add novalidate attribute to form to ensure there's no
-		// nasty HTML5 attributes being added.
-		form.setAttribute("novalidate", "true");
 		this.form = form;
 		this.init();
 	}
@@ -91,41 +58,15 @@ export class Validation {
 	 * @private
 	 */
 	private init(): void {
+		// Add novalidate attribute to form to ensure there's no
+		// nasty HTML5 attributes being added.
+		this.form.setAttribute("novalidate", "true");
+
+		// TODO
 		this.fields = Array.from(this.form.querySelectorAll(SELECTORS)).map(input => {
-			let validators: Validator[] = [],
-				params = {},
-				messages = new Map<string, string>();
-
-
-			Array.from(input.attributes).forEach(attr => {
-				const reg = new RegExp(`^data-${DATA_ATTRIBUTE}-`);
-				if (reg.test(attr.name)) {
-					let name = <string>attr.name.substr(12);
-					if (name.includes("message")) {
-						messages.set(name.replace("-message", ""), attr.value);
-						return;
-					}
-					if (name === 'type') {
-						name = attr.value;
-						attr.value = "";
-					}
-					this.addValidatorToField(validators, params, name, attr.value);
-				} else if (~ALLOWED_ATTRIBUTES.indexOf(attr.name)) {
-					this.addValidatorToField(validators, params, attr.name, attr.value);
-				} else if (attr.name === 'type') {
-					this.addValidatorToField(validators, params, attr.value);
-				}
-			});
-
-			validators.sort((a, b) => a.priority - b.priority);
-
-			let el = input as ScribeHTMLElement;
-			return el.scribe = <ScribeValidation>{input, validators, params, messages};
+			return new ValidationElement(<HTMLElement>input);
 		});
 	}
-
-
-	//private getValidation(attributes: Nod)
 
 	/**
 	 *
@@ -148,66 +89,39 @@ export class Validation {
 	 * @returns boolean
 	 */
 	public validateField(field: HTMLElement | Element | string, silent = false): boolean {
-		let valid = true;
-
 		if (typeof field === 'string') {
 			field = <HTMLElement>document.querySelector(field);
 		}
-		const el = field as ScribeHTMLElement;
-		if (!el || !el.scribe) {
-			// Log
+
+		// Check the html element exists in the current
+		// fields, if there is no match, bail.
+		const el = this.fields.find(f => f.input === field);
+		if (!el) {
+			Log.error("Field not found in form:", field)
 			return false;
 		}
 
-		const scribe = el.scribe;
-
-		let errors: { [key: string]: string } = {};
-		scribe.validators.forEach(validator => {
-			if (!el.scribe) {
-				return false;
-			}
-
-			const name = validator.name;
-			let params = scribe.params[name] ? scribe.params[name] : [] as any;
-			params[0] = scribe.input;
-
-			const isValid = validator.validate.apply(<ScribeHTMLElement>scribe.input, params);
-			if (!isValid) {
-				valid = false;
-				let msg = scribe.messages.get(name);
-				if (!msg) {
-					msg = lang[name];
-				}
-				msg = tmpl.apply(msg, params)
-				errors[name] = msg;
-			}
-		});
-
-		if (!isEmptyObject(errors)) {
-			for (const key in errors) {
-				this.mark(<HTMLElement>el, errors[key]);
-			}
+		// Validate and mark/unmark the field.
+		const validate = el.validate();
+		if (!validate.valid) {
+			this.mark(el.input, validate.message);
 		} else {
-			this.unmark(<HTMLElement>el);
+			this.unmark(el.input);
 		}
 
-		scribe.errors = errors;
-
-		// We're not manipulating the errors of scribe.
-
-		return valid;
+		return validate.valid;
 	}
 
 	/**
 	 *
 	 */
-	public getErrors(): ScribeValidationErrors[] {
-		let errors: ScribeValidationErrors[] = [];
-		this.fields.forEach(field => {
-			errors.push(field.errors);
-		})
-		return errors;
-	}
+	// public getErrors(): ScribeValidationErrors[] {
+	// 	let errors: ScribeValidationErrors[] = [];
+	// 	this.fields.forEach(field => {
+	// 		errors.push(field.errors);
+	// 	})
+	// 	return errors;
+	// }
 
 	// TODO: Events
 
@@ -218,7 +132,7 @@ export class Validation {
 	public reset(): void {
 		this.fields.forEach((field, index) => {
 			this.unmark(field.input);
-			this.fields[index].errors = {};
+			this.fields[index].clearErrors();
 		});
 	}
 
@@ -228,9 +142,6 @@ export class Validation {
 	 */
 	public destroy(): void {
 		this.reset();
-		this.fields.forEach(field => {
-			delete field.input.scribe;
-		});
 		this.fields = [];
 	}
 
@@ -268,6 +179,10 @@ export class Validation {
 
 		// Bail if the validation already has been marked as invalid.
 		if (Classes.has(container, this.config.errorClass)) {
+			const msg = container.querySelector('.' + this.config.errorClass);
+			if (msg) {
+				msg.innerHTML = message;
+			}
 			return;
 		}
 
@@ -301,40 +216,5 @@ export class Validation {
 		if (message) {
 			container.removeChild(message);
 		}
-	}
-
-	/**
-	 * For use with the init function. Adds an array of validators, parameters
-	 * for the validator, name and a value if there is one attached.
-	 * @param validators
-	 * @param params
-	 * @param name
-	 * @param value
-	 * @private
-	 */
-	private addValidatorToField(validators: Validator[], params: any, name: string, value?: string): void {
-		// Bail if there is no validator that exists with the
-		// given name.
-		let validator = tests[name];
-		if (!validator) {
-			return;
-		}
-
-		// Check if the validators is already been added, such as
-		// data-scribe-required and required.
-		const exists = validators.find(v => v.name === name);
-		if (exists) {
-			return;
-		}
-
-		validators.push(validator);
-
-		// Add the values to the parameters for validation functions.
-		if (!value) {
-			return;
-		}
-		let values = (name === "pattern" ? [value] : value.split(',')) as any[];
-		values.unshift(null); // Placeholder for HTML Element, when validation.
-		params[name] = values;
 	}
 }

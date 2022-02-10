@@ -23,8 +23,8 @@ if (form) {
 
 	form.querySelectorAll("input:not([type^=hidden]):not([type^=submit]), textarea, select").forEach(input => {
 		input.addEventListener("blur", e => {
-			validation.validateField(input);
-			console.log(validation.getErrors())
+			validation.validate();
+			//console.log(validation.getErrors())
 		});
 	})
 }
