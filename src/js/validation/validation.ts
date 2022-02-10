@@ -147,6 +147,8 @@ export class Validation {
 		}
 
 		validators.push(validator);
+
+		// Add the values to the parameters for validation functions.
 		if (!value) {
 			return;
 		}

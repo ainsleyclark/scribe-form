@@ -1,5 +1,9 @@
+import {Log} from "../common/log";
+
 /**
- *
+ * Validator defines a validation method for Scribe.
+ * Priority indicates the order in which the validation
+ * methods will be evaluated.
  */
 export interface Validator {
 	name: string
@@ -8,10 +12,10 @@ export interface Validator {
 }
 
 /**
- *
+ * The array of validators.
  */
-export const tests: Record<string, Validator> = {
-	'required': {
+const validators: Validator[] = [
+	{
 		name: 'required',
 		priority: 99,
 		validate: (el: HTMLInputElement): boolean => {
@@ -22,7 +26,7 @@ export const tests: Record<string, Validator> = {
 			return value !== undefined && value !== '';
 		}
 	},
-	'email': {
+	{
 		name: 'email',
 		priority: 1,
 		validate: (el: HTMLInputElement): boolean => {
@@ -31,14 +35,14 @@ export const tests: Record<string, Validator> = {
 			);
 		}
 	},
-	'number': {
+	{
 		name: 'number',
 		priority: 1,
 		validate: (el: HTMLInputElement): boolean => {
 			return !el.value || !isNaN(parseFloat(el.value));
 		}
 	},
-	'url': {
+	{
 		name: 'url',
 		priority: 1,
 		validate: (el: HTMLInputElement, length: number): boolean => {
@@ -50,52 +54,61 @@ export const tests: Record<string, Validator> = {
 			return true;
 		}
 	},
-	'minlength': {
+	{
 		name: 'minlength',
 		priority: 1,
-		validate: (el: HTMLInputElement, length: number): boolean => {
-			const value = el.value;
-			return true;
+		validate: (el: HTMLInputElement, length: any): boolean => {
+			return !el.value || el.value.length >= parseInt(length);
 		}
 	},
-	'maxlength': {
+	{
 		name: 'maxlength',
 		priority: 1,
-		validate: (el: HTMLInputElement, length: number): boolean => {
-			const value = el.value;
-			return true;
+		validate: (el: HTMLInputElement, length: any): boolean => {
+			return !el.value || el.value.length <= parseInt(length)
 		}
 	},
-	'min': {
+	{
 		name: 'min',
 		priority: 1,
-		validate: (el: HTMLInputElement, limit: number): boolean => {
-			const value = el.value;
-			return true;
+		validate: (el: HTMLInputElement, limit: any): boolean => {
+			// TODO: Need to account for checkboxes
+			return parseFloat(el.value) >= parseFloat(limit)
 		}
 	},
-	'max': {
-		name: 'max',
-		priority: 1,
-		validate: (el: HTMLInputElement, limit: number): boolean => {
-			const value = el.value;
-			return true;
-		}
-	},
-	'pattern': {
+	{
 		name: 'pattern',
 		priority: 1,
-		validate: (el: HTMLInputElement, pattern: string): boolean => {
-			const value = el.value;
-			return true;
+		validate: (el: HTMLInputElement, pattern: any): boolean => {
+			const reg = new RegExp('^/(.*?)/([gimy]*)$');
+			let m = pattern.match(reg);
+			return !el.value || (new RegExp(m[1], m[2])).test(el.value)
 		}
 	},
-	'equals': {
+	{
 		name: 'equals',
 		priority: 1,
-		validate: (el: HTMLInputElement, selector: string): boolean => {
-			const value = el.value;
-			return true;
+		validate: (el: HTMLInputElement, selector: any): boolean => {
+			const other = <HTMLInputElement>document.querySelector(selector);
+			if (!other) {
+				Log.error("No query selector found for equals:", selector)
+				return false;
+			}
+			return other.value == el.value;
 		}
-	},
-};
+	}
+];
+
+/**
+ * Formats the tests, so they are key => validator pair.
+ * @returns {[key: string]: Validator}
+ */
+const format = (): {[key: string]: Validator} => {
+	let rt: {[key: string]: Validator} = {};
+	validators.forEach(test => {
+		rt[test.name] = test;
+	})
+	return rt;
+}
+
+export const tests = format();
