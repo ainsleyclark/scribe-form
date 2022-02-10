@@ -1,6 +1,8 @@
 /**
  * validation.js
+ *
  * Validation logic for Scribe
+ *
  * @author Ainsley Clark
  * @author URL:   https://ainsley.dev
  * @author Email: hello@ainsley.dev
@@ -80,6 +82,8 @@ export class Validation {
 
 	}
 
+	dataAttribute: "validate"
+
     /**
      * TODO
      * @param form
@@ -107,7 +111,7 @@ export class Validation {
 
         // Initialises the fields with new Validation elements.
         this.fields = Array.from(this.form.querySelectorAll(SELECTORS))
-            .map(input => new ValidationElement(<HTMLElement>input));
+            .map(input => new ValidationElement(<HTMLElement>input, this.dataAttribute));
     }
 
     /**

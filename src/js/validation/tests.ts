@@ -1,3 +1,14 @@
+/**
+ * tests.js
+ *
+ * Built in validators and definitions for validation
+ * including the Validation class for adding user
+ * defined validation functions.
+ *
+ * @author Ainsley Clark
+ * @author URL:   https://ainsley.dev
+ * @author Email: hello@ainsley.dev
+ */
 import {Log} from "../common/log";
 
 /**
@@ -51,7 +62,7 @@ class Validation {
 }
 
 /**
- * The array of validators.
+ * The array of built-in validators.
  */
 const tests: Validator[] = [
     {

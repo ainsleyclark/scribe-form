@@ -1,7 +1,6 @@
 import {Validator, validators} from "./tests";
 import {lang} from "./lang";
 import {tmpl} from "./util";
-import {Validation} from "./validation";
 
 const ALLOWED_ATTRIBUTES = ['required', 'min', 'max', 'minlength', 'maxlength', 'pattern'];
 
