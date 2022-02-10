@@ -18,11 +18,16 @@ import {Validation} from "./validation/validation";
 const form = document.querySelector(".scribe-form") as HTMLFormElement,
 	input = document.querySelector("[name='first-name']") as HTMLInputElement;
 if (form) {
-	const test = new Validation(form)
+	const test = new Validation(form);
 
-
-
-	test.getDataAttributes(input)
+	input.addEventListener("blur", e => {
+		const valid = test.validateField("#q1");
+		if (valid) {
+			console.log("valid");
+			return;
+		}
+		console.log("not valid");
+	});
 }
 
 

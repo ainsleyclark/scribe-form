@@ -7,40 +7,31 @@
  */
 import {tests, Validator} from "./tests";
 import Classes from "../common/classes";
+import * as stream from "stream";
 
-
-export interface DataAttributes {
-	required: boolean
-	email: boolean
-	number: boolean
-	url?: boolean
-	minLength?: number
-	maxLength?: number
-	min?: number
-	max?: number
-	pattern?: string
-	equals?: string
-}
-
-export interface Messages {
-	required: string,
-	email: string,
-	invalid: string,
-	minLength: string,
-	maxLength: string,
-	pattern: string,
-	equals: string,
-}
 
 export const DATA_ATTRIBUTE = "scribe"
 
-const ALLOWED_ATTRIBUTES = ["required", "min", "max", 'minlength', 'maxlength', 'pattern'];
-
+const ALLOWED_ATTRIBUTES = ['required', 'min', 'max', 'minlength', 'maxlength', 'pattern'],
+	SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, select"
 
 /**
  * Require * Import
  *
  */
+
+interface ScribeHTMLElement extends HTMLElement {
+	scribe: ScribeValidation
+}
+
+interface ScribeValidation {
+	input: HTMLElement,
+	validators: Validator[],
+	params: {[key: string]: string},
+	messages: Map<string, string>,
+}
+
+
 
 export class Validation {
 
@@ -60,7 +51,7 @@ export class Validation {
 	};
 
 	// Validation error texts
-	messages: {
+	messages: {[key: string]: string} = {
 		required: 'please put something here',
 		invalid: 'input is not as expected',
 		short: 'input is too short',
@@ -82,6 +73,8 @@ export class Validation {
 
 	form: HTMLFormElement
 
+	fields: ScribeValidation[]
+
 	/**
 	 *
 	 * @param form
@@ -91,14 +84,84 @@ export class Validation {
 		// nasty HTML5 attributes being added.
 		form.setAttribute("novalidate", "true");
 
-
+		this.init(form);
 	}
+
+
+	private init(form: HTMLFormElement) {
+
+		this.fields = Array.from(form.querySelectorAll(SELECTORS)).map(input => {
+			let validators: Validator[] = [],
+				params = {},
+				messages = new Map<string, string>();
+
+			Array.from(input.attributes).forEach(attr => {
+				const reg = new RegExp(`^data-${DATA_ATTRIBUTE}-`);
+				if (reg.test(attr.name)) {
+					let name = <string>attr.name.substr(12);
+					if (name.includes("message")) {
+						messages.set(name.replace("-message", ""), attr.value);
+						return;
+					}
+					if (name === 'type') {
+						name = attr.value;
+						attr.value = "";
+					}
+					this.addValidatorToField(validators, params, name, attr.value);
+				} else if (~ALLOWED_ATTRIBUTES.indexOf(attr.name)) {
+					this.addValidatorToField(validators, params, attr.name, attr.value);
+				} else if (attr.name === 'type') {
+					this.addValidatorToField(validators, params, attr.value);
+				}
+			});
+
+			validators.sort((a, b) => a.priority - b.priority);
+
+			let el = input as ScribeHTMLElement;
+			return el.scribe = <ScribeValidation>{input, validators, params, messages};
+		});
+	}
+
+
+	/**
+	 *
+	 * @param validators
+	 * @param params
+	 * @param name
+	 * @param value
+	 * @private
+	 */
+	private addValidatorToField(validators: Validator[], params: any, name: string, value?: string): void {
+		// Bail if there is no validator that exists with the
+		// given name.
+		let validator = tests[name];
+		if (!validator) {
+			return;
+		}
+
+		// Check if the validators is already been added, such as
+		// data-scribe-required and required.
+		const exists = validators.find(v => v.name === name);
+		if (exists) {
+			return;
+		}
+
+		validators.push(validator);
+		if (!value) {
+			return;
+		}
+		let values = (name === "pattern" ? [value]: value.split(',')) as any[];
+		values.unshift(null); // Placeholder for HTML Element, when validation.
+		params[name] = values;
+	}
+
 
 	/**
 	 * @returns boolean
 	 */
 	public validate(): boolean {
-		return false
+
+		return false;
 	}
 
 	/**
@@ -107,16 +170,41 @@ export class Validation {
 	 * @param silent - Don't mark the field, only return if it passed validation.
 	 * @returns boolean
 	 */
-	public validateField(field: HTMLElement, silent = false): boolean {
+	public validateField(field: HTMLElement | Element | string, silent = false): boolean {
+		let valid = true;
 
-		const validators = this.getDataAttributes(field);
+		if (typeof field === 'string') {
+			field = <HTMLElement>document.querySelector(field);
+		}
+		const el = field as ScribeHTMLElement;
+		if (!el) {
+			// Log
+			return false;
+		}
 
+		let errors: string[] = [];
 
-		validators.forEach(validator => {
+		el.scribe.validators.forEach((validator, index) => {
+			const name = validator.name;
+			let params = el.scribe.params[name] ? el.scribe.params[name] : [] as any;
+			params[0] = el.scribe.input;
 
-			//validator.validate(el, )
+			const isValid = validator.validate.apply(<HTMLInputElement>el.scribe.input, params);
+			if (isValid) {
+				return;
+			}
+
+			valid = false;
+
+			const msg = el.scribe.messages.get(name)
+			if (!msg) {
+				errors.push(this.messages[name]);
+			} else {
+				errors.push(msg);
+			}
 		});
-		return false
+
+		return valid;
 	}
 
 	// TODO: Events
@@ -182,77 +270,4 @@ export class Validation {
 			container.removeChild(message);
 		}
 	}
-
-	/**
-	 *
-	 * @param field
-	 * @returns TODO
-	 * @private
-	 */
-	public getDataAttributes(field: HTMLElement): Validator[] {
-
-
-		let validators: Validator[] = [];
-
-
-		let test = {} as any;
-
-		Array.from(field.attributes).forEach(attr => {
-			const reg = new RegExp(`^data-${DATA_ATTRIBUTE}-`);
-			if (reg.test(attr.name)) {
-				let name = <string>attr.name.substr(12);
-
-				const validator = tests[name];
-
-				if (validator) {
-					validators.push(validator);
-
-
-					test[name] = validator;
-				}
-
-
-				if (name === "message") {
-				//	validator.message = attr.value;
-				}
-
-			} else if (~ALLOWED_ATTRIBUTES.indexOf(attr.name)) {
-
-			} else if (attr.name === 'type') {
-
-			}
-
-			//console.log(`${attr.nodeName}=${attr.nodeValue}`);
-		})
-
-		validators.sort((a, b) => a.priority - b.priority);
-
-		return validators;
-	}
-
-	private temp(field: HTMLElement): DataAttributes {
-		return <DataAttributes>{
-			required: field.hasAttribute(`data-${DATA_ATTRIBUTE}-required`) || field.hasAttribute("required"),
-			email: field.getAttribute(`data-${DATA_ATTRIBUTE}-type`) === 'email' || field.getAttribute("type") === 'email',
-			number: field.getAttribute(`data-${DATA_ATTRIBUTE}-type`) === 'number' || field.getAttribute("type") === 'number',
-			url: field.hasAttribute(`data-${DATA_ATTRIBUTE}-url`) || field.getAttribute("type") === 'url',
-			minLength: (field.getAttribute(`data-${DATA_ATTRIBUTE}-minlength`) || field.getAttribute("minlength")) as Number | null,
-			maxLength: (field.getAttribute(`data-${DATA_ATTRIBUTE}-maxlength`) || field.getAttribute("maxlength")) as Number | null,
-			min: (field.getAttribute(`data-${DATA_ATTRIBUTE}-min`) || field.getAttribute("min")) as Number | null,
-			max: (field.getAttribute(`data-${DATA_ATTRIBUTE}-max`) || field.getAttribute("max")) as Number | null,
-			pattern: field.getAttribute(`data-${DATA_ATTRIBUTE}-pattern`),
-			equals: field.getAttribute(`data-${DATA_ATTRIBUTE}-equals`) || field.getAttribute("equals"),
-		}
-	}
-
-	// private getMessage(field: HTMLElement): string {
-	// 	const attr = field.getAttribute(`data-${DATA_ATTRIBUTE}-message`);
-	// 	if (attr) {
-	// 		return attr
-	// 	}
-	// }
 }
-
-
-
-
