@@ -8,20 +8,25 @@
 
 import {tests, ValidateFn, Validator} from "./tests";
 import Classes from "../common/classes";
-import * as stream from "stream";
 import {lang} from "./lang";
-import {tmpl} from "./util";
+import {isEmptyObject, tmpl} from "./util";
 import {Log} from "../common/log";
+
 
 export const DATA_ATTRIBUTE = "scribe"
 const ALLOWED_ATTRIBUTES = ['required', 'min', 'max', 'minlength', 'maxlength', 'pattern'],
 	SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, select"
 
-
+/**
+ *
+ */
 interface ScribeHTMLElement extends HTMLElement {
 	scribe?: ScribeValidation
 }
 
+/**
+ *
+ */
 interface ScribeValidation {
 	input: ScribeHTMLElement,
 	validators: Validator[],
@@ -30,10 +35,18 @@ interface ScribeValidation {
 	errors: ScribeValidationErrors
 }
 
+
+
+/**
+ *
+ */
 interface ScribeValidationErrors {
 	[key: string]: string
 }
 
+/**
+ *
+ */
 export class Validation {
 
 	config = {
@@ -78,11 +91,11 @@ export class Validation {
 	 * @private
 	 */
 	private init(): void {
-
 		this.fields = Array.from(this.form.querySelectorAll(SELECTORS)).map(input => {
 			let validators: Validator[] = [],
 				params = {},
 				messages = new Map<string, string>();
+
 
 			Array.from(input.attributes).forEach(attr => {
 				const reg = new RegExp(`^data-${DATA_ATTRIBUTE}-`);
@@ -110,6 +123,9 @@ export class Validation {
 			return el.scribe = <ScribeValidation>{input, validators, params, messages};
 		});
 	}
+
+
+	//private getValidation(attributes: Nod)
 
 	/**
 	 *
@@ -156,28 +172,28 @@ export class Validation {
 			params[0] = scribe.input;
 
 			const isValid = validator.validate.apply(<ScribeHTMLElement>scribe.input, params);
-			if (isValid) {
-				return;
-			}
-
-			valid = false;
-
-			let msg = scribe.messages.get(name);
-			if (!msg) {
-				msg = lang[name];
-			}
-			msg = tmpl.apply(msg, params)
-
-			errors[name] = msg;
-
-			if (!silent) {
-				this.mark(<HTMLElement>el, msg);
+			if (!isValid) {
+				valid = false;
+				let msg = scribe.messages.get(name);
+				if (!msg) {
+					msg = lang[name];
+				}
+				msg = tmpl.apply(msg, params)
+				errors[name] = msg;
 			}
 		});
 
-		el.scribe.errors = errors;
+		if (!isEmptyObject(errors)) {
+			for (const key in errors) {
+				this.mark(<HTMLElement>el, errors[key]);
+			}
+		} else {
+			this.unmark(<HTMLElement>el);
+		}
 
-		console.log(el.scribe.errors);
+		scribe.errors = errors;
+
+		// We're not manipulating the errors of scribe.
 
 		return valid;
 	}
@@ -191,7 +207,6 @@ export class Validation {
 			errors.push(field.errors);
 		})
 		return errors;
-
 	}
 
 	// TODO: Events
