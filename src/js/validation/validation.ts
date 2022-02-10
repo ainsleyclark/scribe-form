@@ -1,5 +1,5 @@
 /**
- * validation.js
+ * validation.ts
  *
  * Validation logic for Scribe
  *
@@ -8,52 +8,15 @@
  * @author Email: hello@ainsley.dev
  */
 
-import {ValidateFn, Validator} from "./tests";
+import {validators} from "./tests";
 import Classes from "../common/classes";
 import {Log} from "../common/log";
 import {ValidationElement} from "./element";
-import {lang} from "./lang";
 
 /**
  *
  */
 const SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, select"
-
-/**
- *
- */
-type ValidationConfig = {
-    dataAttribute?: string
-    live?: boolean
-    classes?: {
-        // Class of the parent element where the error/success
-        // class is added.
-        classTo?: string,
-        // Class of the parent to add in case of an error.
-        errorClass?: string,
-        // Class of the parent to add in case of success.
-        successClass?: string,
-        // Class of the parent element where error text element
-        // is appended.
-        errorTextParent?: string,
-        // Type of element to create for the error text.
-        errorTextTag?: string,
-        // Class of the error text element
-        errorTextClass?: string,
-    }
-    messages?: {
-        required?: string,
-        email?: string,
-        number?: string,
-        url?: string,
-        minLength?: string,
-        maxLength?: string,
-        min?: string,
-        max?: string,
-        pattern?: string,
-        equals?: string,
-    }
-}
 
 /**
  *
@@ -71,18 +34,16 @@ export class Validation {
      * TODO
      */
     classes: {
-        classTo: 'scribe-question',
+        classTo: 'form-group',
         errorClass: 'form-group-error',
         successClass: 'form-group-success',
         errorTextParent: 'form-group',
         errorTextTag: 'span',
         errorTextClass: 'form-message',
     }
-	messages: {
+    messages: {}
 
-	}
-
-	dataAttribute: "validate"
+    dataAttribute: "validate"
 
     /**
      * TODO
@@ -161,13 +122,13 @@ export class Validation {
     /**
      *
      */
-    // public getErrors(): ScribeValidationErrors[] {
-    // 	let errors: ScribeValidationErrors[] = [];
-    // 	this.fields.forEach(field => {
-    // 		errors.push(field.errors);
-    // 	})
-    // 	return errors;
-    // }
+    public getErrors(): { [name: string]: string } {
+        let errors: ScribeValidationErrors[] = [];
+        this.fields.forEach(field => {
+            errors.push(field.errors);
+        })
+        return errors;
+    }
 
     // TODO: Events
 
@@ -199,15 +160,8 @@ export class Validation {
      * @param priority
      */
     public addValidator(name: string, validator: ValidateFn, message: string, priority: number): void {
-        if (Object.prototype.hasOwnProperty.call(tests, name)) {
-            Log.error("Validator already exists:", name)
-            return;
-        }
-        tests[name] = <Validator>{
-            name: name,
-            validate: validator,
-            priority: priority,
-        }
+        validators.add(name, validator, priority);
+        // TODO: We need to add the message to globals here.
     }
 
     /**

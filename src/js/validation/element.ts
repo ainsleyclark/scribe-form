@@ -1,4 +1,4 @@
-import {Validator, validators} from "./tests";
+import {validators} from "./tests";
 import {lang} from "./lang";
 import {tmpl} from "./util";
 
@@ -29,7 +29,7 @@ export class ValidationElement {
     /**
      *
      */
-    errors: { [key: string]: string }
+    errors: { [name: string]: string }
     /**
      *
      */

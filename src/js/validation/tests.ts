@@ -1,5 +1,5 @@
 /**
- * tests.js
+ * tests.ts
  *
  * Built in validators and definitions for validation
  * including the Validation class for adding user
@@ -10,23 +10,6 @@
  * @author Email: hello@ainsley.dev
  */
 import {Log} from "../common/log";
-
-/**
- * Validator defines a validation method for Scribe.
- * Priority indicates the order in which the validation
- * methods will be evaluated.
- */
-export interface Validator {
-    name: string
-    priority: number,
-    validate: ValidateFn
-}
-
-/**
- * ValidateFn is the function that validates input values
- * with any amount of arguments/
- */
-export declare type ValidateFn = (el: HTMLInputElement, ...args: any[]) => boolean
 
 /**
  * Validation is responsive for formatting initial validation methods
@@ -49,10 +32,9 @@ class Validation {
      * If a validator already exists, the function will return.
      * @param name
      * @param validate
-     * @param message
      * @param priority
      */
-    add(name: string, validate: ValidateFn, message: string, priority: number) {
+    add(name: string, validate: ValidateFn, priority: number): void {
         if (Object.prototype.hasOwnProperty.call(this.tests, name)) {
             Log.error("Validator already exists:", name)
             return;

@@ -43,12 +43,12 @@ declare interface ScribeInstance {
 declare interface ScribeConfig {
     /**
      * Form
-     * @defaultValue ".scribe-form"
+     * @default ".scribe-form"
      */
     form?: HTMLFormElement | string;
     /**
      * The amount of ms to animate the questions
-     * @defaultValue 600
+     * @default 600
      */
     speed?: number
     /**
@@ -58,12 +58,12 @@ declare interface ScribeConfig {
     /**
      * Controls the display and functionalities of controls components (prev/next buttons).
      * If true, display the controls and add all functionalities.
-     * @defaultValue true
+     * @default true
      */
     controls?: boolean;
     /**
      * Determines if the animations should animate on the X axis.
-     * @defaultValue true
+     * @default true
      */
     horizontal?: boolean
     /**
@@ -73,12 +73,12 @@ declare interface ScribeConfig {
     /**
      * Customized previous buttons.
      * This option will be ignored if controlsContainer is a Node element or a CSS selector.
-     * @defaultValue false
+     * @default false
      */
     prevButton?: HTMLElement | string | false;
     /**
      * Moves throughout all the slides seamlessly.
-     * @defaultValue true
+     * @default true
      */
     nextButton?: HTMLElement | string | false;
 }

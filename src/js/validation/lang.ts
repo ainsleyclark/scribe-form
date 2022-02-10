@@ -1,6 +1,11 @@
-
 /**
+ * lang.ts
  *
+ * Language validation messages for the validation library.
+ *
+ * @author Ainsley Clark
+ * @author URL:   https://ainsley.dev
+ * @author Email: hello@ainsley.dev
  */
 export const lang: {[key: string]: string} = {
 	required: "This field is required",
