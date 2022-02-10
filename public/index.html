@@ -2,7 +2,7 @@
 <html lang="en-gb" xmlns="http://www.w3.org/1999/html">
 	<head>
 		<title>Scribe Form</title>
-		<link rel="stylesheet" href="/css/app.css">
+<!--		<link rel="stylesheet" href="/css/app.css">-->
 		<link rel="preload" href="/js/app.js" as="script">
 	</head>
 	<body>
@@ -20,13 +20,13 @@
 			<!-- First Name -->
 			<fieldset class="scribe-question" data-scribe-type="text">
 				<label for="q1">What's your first name?</label>
-				<input id="q1" name="first-name" type="text" data-scribe-required data-scribe-required-message="TESTTTT" required />
+				<input id="q1" name="first-name" type="text" data-scribe-required data-scribe-minlength="20" data-scribe-required-message="TESTTTT" required />
 			</fieldset>
 			<!-- First Name -->
-<!--			<fieldset class="scribe-question" data-scribe-type="text">-->
-<!--				<label for="q4">What's your message?</label>-->
-<!--				<textarea id="q4" name="message"></textarea>-->
-<!--			</fieldset>-->
+			<fieldset class="scribe-question" data-scribe-type="text">
+				<label for="q4">What's your message?</label>
+				<textarea id="q4" name="message" data-scribe-required></textarea>
+			</fieldset>
 			<!-- Last Name -->
 <!--			<fieldset class="scribe-question" data-scribe-type="text">-->
 <!--				<label for="q2">What's your last name?</label>-->

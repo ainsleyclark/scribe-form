@@ -8,8 +8,14 @@ import {Log} from "../common/log";
 export interface Validator {
 	name: string
 	priority: number,
-	validate: (el: HTMLInputElement, ...args: any[]) => boolean
+	validate: ValidateFn
 }
+
+/**
+ * ValidateFn is the function that validates input values
+ * with any amount of arguments/
+ */
+export declare type ValidateFn = (el: HTMLInputElement, ...args: any[]) => boolean
 
 /**
  * The array of validators.
@@ -111,4 +117,4 @@ const format = (): {[key: string]: Validator} => {
 	return rt;
 }
 
-export const tests = format();
+export let tests = format();

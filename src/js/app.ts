@@ -18,16 +18,20 @@ import {Validation} from "./validation/validation";
 const form = document.querySelector(".scribe-form") as HTMLFormElement,
 	input = document.querySelector("[name='first-name']") as HTMLInputElement;
 if (form) {
-	const test = new Validation(form);
+	const validation = new Validation(form);
 
-	input.addEventListener("blur", e => {
-		const valid = test.validateField("#q1");
-		if (valid) {
-			console.log("valid");
-			return;
-		}
-		console.log("not valid");
-	});
+
+	form.querySelectorAll("input:not([type^=hidden]):not([type^=submit]), textarea, select").forEach(input => {
+		input.addEventListener("blur", e => {
+			validation.validateField(input);
+			// console.log(validation.getErrors())
+
+
+			setTimeout(() => {
+				validation.destroy();
+			}, 1000)
+		});
+	})
 }
 
 
