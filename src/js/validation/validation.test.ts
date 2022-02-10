@@ -1,8 +1,6 @@
-import {Validation, DATA_ATTRIBUTE} from "./validation";
+import {Validation} from "./validation";
 
-const val = new Validation(document.createElement("form")) as any;
-
-
+const val = new Validation(document.createElement("form")) as any; //es-lint disable
 
 test('adds 1 + 2 to equal 3', () => {
     const el = document.createElement("input");

@@ -6,7 +6,6 @@
  * @author Email: hello@ainsley.dev
  */
 
-import {Scribe} from "./scribe";
 import {Validation} from "./validation/validation";
 
 // new Scribe({
