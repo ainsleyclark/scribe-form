@@ -3,7 +3,7 @@
  * console.
  */
 export class Log {
-    static prefix = "Scribe -"
+    static prefix = "Scribe -";
 
     /**
 	 * Log a console error.
@@ -29,6 +29,6 @@ export class Log {
 	 * @param data
 	 */
     static info(message: string, ...data: any[]): void {
-        console.log(this.prefix, message, data)
+        console.log(this.prefix, message, data);
     }
 }

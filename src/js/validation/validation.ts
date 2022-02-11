@@ -19,7 +19,7 @@ import {ValidateFn, ValidationConfig, ValidationErrors} from "./main";
 /**
  * The inputs to select for validation.
  */
-const SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, select"
+const SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, select";
 
 export class Validation {
     /**
@@ -75,7 +75,7 @@ export class Validation {
      * @type {(e: Event) => void}
      * @private
      */
-    private readonly boundEventListener: (e: Event) => void
+    private readonly boundEventListener: (e: Event) => void;
 
     /**
      * Creates a new Validation instance, form is either an element
@@ -90,7 +90,7 @@ export class Validation {
         }
 
         if (!form) {
-            Log.error("Cannot find form element in DOM: ", form)
+            Log.error("Cannot find form element in DOM: ", form);
             return;
         }
 
@@ -247,7 +247,7 @@ export class Validation {
         }
 
         // Append the error message to the container.
-        const tag = `<${this.classes.errorTextTag} class="${this.classes.errorClass}">${errors[0]}</${this.classes.errorTextTag}>`
+        const tag = `<${this.classes.errorTextTag} class="${this.classes.errorClass}">${errors[0]}</${this.classes.errorTextTag}>`;
         container.insertAdjacentHTML('beforeend', tag);
 
         // Add the error class to the container, add a delay, so it can be
@@ -310,7 +310,7 @@ export class Validation {
      */
     private listener(el: ValidationElement, add = true): void {
         const listener = ~['radio', 'checkbox'].indexOf(el.input.getAttribute('type') || 'input') ? 'change' : 'input';
-        el.input.removeEventListener(listener, this.boundEventListener, false)
+        el.input.removeEventListener(listener, this.boundEventListener, false);
         if (add) {
             el.input.addEventListener(listener, this.boundEventListener, false);
         }
@@ -333,7 +333,7 @@ export class Validation {
         // fields, if there is no match, bail.
         const el = this.fields.find(f => f.input.isEqualNode(<Node>field));
         if (!el) {
-            Log.error("Field not found in form:", field)
+            Log.error("Field not found in form:", field);
             return null;
         }
 

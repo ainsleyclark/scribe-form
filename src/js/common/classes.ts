@@ -43,8 +43,8 @@ export default class Classes {
     static toggle(el: HTMLElement, name: string): void {
         if (Classes.has(el, name)) {
             Classes.remove(el, name);
-            return
+            return;
         }
-        Classes.add(el, name)
+        Classes.add(el, name);
     }
 }

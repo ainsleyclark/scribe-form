@@ -39,7 +39,7 @@ export class Scribe {
         okButton: ".scribe-ok",
         prevButton: ".scribe-prev",
         nextButton: ".scribe-next",
-    }
+    };
     /**
      * The main HTML Form element to use.
      * @type {HTMLFormElement}
@@ -49,7 +49,7 @@ export class Scribe {
      * TODO: Add jsDoc
      * @type {Validation}
      */
-    validation: Validation
+    validation: Validation;
     /**
      * TODO: Add jsDoc
      * @type {HTMLElement[]}
@@ -115,7 +115,7 @@ export class Scribe {
      * @returns string
      */
     public version(): string {
-        return VERSION
+        return VERSION;
     }
 
     /**
@@ -124,7 +124,7 @@ export class Scribe {
      */
     public goTo(target: number | 'next' | 'prev' | 'first' | 'last'): void {
         if (typeof target === 'number') {
-            this.animate(target)
+            this.animate(target);
             return;
         }
         switch (target as string) {
@@ -189,7 +189,7 @@ export class Scribe {
             index: this.currentSlide,
             items: this.list.length,
             progress: this.progress(),
-        }
+        };
     }
 
     // on(event,callback) {
@@ -204,7 +204,7 @@ export class Scribe {
      * @private
      */
     private progress(): number {
-        return (this.currentSlide / this.list.length) * 100
+        return (this.currentSlide / this.list.length) * 100;
     }
 
     /**
@@ -212,7 +212,7 @@ export class Scribe {
      * @returns {boolean}
      */
     public validate(): boolean {
-        return true
+        return true;
     }
 
     /**
@@ -226,7 +226,7 @@ export class Scribe {
                 el.ariaHidden = 'false';
             } else {
                 el.ariaHidden = 'true';
-                el.style.transform = `translate3d(0,${this.config.size},0)`
+                el.style.transform = `translate3d(0,${this.config.size},0)`;
             }
         });
         this.form.classList.add('scribe-form-loaded');
@@ -240,7 +240,7 @@ export class Scribe {
     private animate(to: number) {
         const isForwards = to > this.currentSlide;
         if (isForwards && this.isLastSlide()) {
-            return
+            return;
         }
 
         if (!isForwards && this.isFirstSlide()) {
@@ -263,7 +263,7 @@ export class Scribe {
             return;
         }
 
-        this.burst++
+        this.burst++;
 
         let currTransform = `translate3d(0,${this.config.size},0)`;
         if (isForwards) {
@@ -345,11 +345,11 @@ export class Scribe {
             return;
         }
         setTimeout(() => {
-            this.burst--
+            this.burst--;
             if (this.burst === 0) {
                 el.focus();
             }
-        }, this.animatingTime - 100)
+        }, this.animatingTime - 100);
     }
 
     /**

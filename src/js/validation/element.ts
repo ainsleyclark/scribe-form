@@ -25,7 +25,7 @@ export class ValidationElement {
      * The HTMLElement being validated
      * @type {HTMLElement}
      */
-    input: HTMLElement
+    input: HTMLElement;
     /**
      * The array of validators to check against.
      * @type {Validator[]}
@@ -54,7 +54,7 @@ export class ValidationElement {
      * The data attribute that should be checked.
      * @type {string}
      */
-    dataAttribute: string
+    dataAttribute: string;
 
     /**
      * Creates a new Validation element.
@@ -127,13 +127,13 @@ export class ValidationElement {
         // i.e (data attribute).
         const attr = this.messages.get(name);
         if (attr) {
-            return attr
+            return attr;
         }
 
         // Check if there is a message within the
         // validator, as that's where to user defined messages are.
         if (validator.message) {
-            return validator.message
+            return validator.message;
         }
 
         // Fall back to the global messages.

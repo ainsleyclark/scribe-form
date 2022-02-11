@@ -16,16 +16,16 @@
 		"dev": "npm run development",
 		"development": "mix",
 		"watch": "mix watch",
-		"watch-poll": "mix watch -- --watch-options-poll=1000",
+		"watch:poll": "mix watch -- --watch-options-poll=1000",
 		"hot": "mix watch --hot",
 		"production": "mix --production",
 		"prod": "npm run production",
 		"test": "jest",
 		"test:watch": "jest --watch",
-		"coverage": "jest --collect-coverage && node util/open-coverage.js",
+		"coverage": "jest --coverageReporters=text-summary",
 		"publish": "npm run publish",
 		"lint": "eslint . --ext .ts",
-		"lint-and-fix": "eslint . --ext .ts --fix"
+		"lint:fix": "eslint . --ext .ts --fix"
 	},
 	"bugs": {
 		"url": "https://github.com/ainsleyclark/scribe-form/issues"

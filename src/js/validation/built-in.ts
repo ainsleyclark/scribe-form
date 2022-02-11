@@ -20,7 +20,7 @@ class Validators {
 	/**
 	 * The key, value pairs of validators.
 	 */
-    tests: { [name: string]: Validator }
+    tests: { [name: string]: Validator };
 
     /**
      * Creates a new Validation type and initialises built in
@@ -40,13 +40,13 @@ class Validators {
 	 */
     add(name: string, validate: ValidateFn, priority?: number, message?: string): void {
         if (Object.prototype.hasOwnProperty.call(this.tests, name)) {
-            Log.error("Validator already exists:", name)
+            Log.error("Validator already exists:", name);
             return;
         }
         if (!priority) {
             priority = 1;
         }
-        this.tests[name] = <Validator>{name, priority, validate, message}
+        this.tests[name] = <Validator>{name, priority, validate, message};
 		this.sort();
     }
 	/**
@@ -59,7 +59,7 @@ class Validators {
 			.reduce((_sortedObj, [k,v]) => ({
 				..._sortedObj,
 				[k]: v
-			}), {})
+			}), {});
 	}
 }
 
@@ -116,7 +116,7 @@ const builtIn: Validator[] = [
         name: 'maxlength',
         priority: 1,
         validate: (el: HTMLInputElement, length: any): boolean => {
-            return !el.value || el.value.length <= parseInt(length)
+            return !el.value || el.value.length <= parseInt(length);
         }
     },
     {
@@ -124,9 +124,9 @@ const builtIn: Validator[] = [
         priority: 1,
         validate: (el: HTMLInputElement, limit: any): boolean => {
             if (el.type === 'checkbox') {
-                return groupedElemCount(el) >= parseInt(limit)
+                return groupedElemCount(el) >= parseInt(limit);
             }
-            return parseFloat(el.value) >= parseFloat(limit)
+            return parseFloat(el.value) >= parseFloat(limit);
         }
     },
     {
@@ -134,9 +134,9 @@ const builtIn: Validator[] = [
         priority: 1,
         validate: (el: HTMLInputElement, limit: any): boolean => {
             if (el.type === 'checkbox') {
-                return groupedElemCount(el) <= parseInt(limit)
+                return groupedElemCount(el) <= parseInt(limit);
             }
-            return parseFloat(el.value) <= parseFloat(limit)
+            return parseFloat(el.value) <= parseFloat(limit);
         }
     },
     {
@@ -145,7 +145,7 @@ const builtIn: Validator[] = [
         validate: (el: HTMLInputElement, pattern: any): boolean => {
             const reg = new RegExp('^/(.*?)/([gimy]*)$');
             const m = pattern.match(reg);
-            return !el.value || (new RegExp(m[1], m[2])).test(el.value)
+            return !el.value || (new RegExp(m[1], m[2])).test(el.value);
         }
     },
     {
@@ -154,7 +154,7 @@ const builtIn: Validator[] = [
         validate: (el: HTMLInputElement, selector: any): boolean => {
             const other = <HTMLInputElement>document.querySelector(selector);
             if (!other) {
-                Log.error("No query selector found for equals:", selector)
+                Log.error("No query selector found for equals:", selector);
                 return false;
             }
             return other.value == el.value;

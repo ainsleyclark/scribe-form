@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">45% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>15/40</span>
+                <span class='fraction'>18/40</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">22.22% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>4/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">43.75% </span>
+                <span class="strong">62.5% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>7/16</span>
+                <span class='fraction'>10/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">35.89% </span>
+                <span class="strong">43.58% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/39</span>
+                <span class='fraction'>17/39</span>
             </div>
         
             
@@ -322,14 +322,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -339,7 +339,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -415,7 +415,7 @@ class Validators {
 	/**
 	 * The key, value pairs of validators.
 	 */
-    tests: { [name: string]: Validator }
+    tests: { [name: string]: Validator };
 &nbsp;
     /**
      * Creates a new Validation type and initialises built in
@@ -435,13 +435,13 @@ class Validators {
 	 */
     add(name: string, validate: ValidateFn, priority?: number, message?: string): void {
         <span class="missing-if-branch" title="if path not taken" >I</span>if (Object.prototype.hasOwnProperty.call(this.tests, name)) {
-<span class="cstat-no" title="statement not covered" >            Log.error("Validator already exists:", name)</span>
+<span class="cstat-no" title="statement not covered" >            Log.error("Validator already exists:", name);</span>
 <span class="cstat-no" title="statement not covered" >            return;</span>
         }
         <span class="missing-if-branch" title="if path not taken" >I</span>if (!priority) {
 <span class="cstat-no" title="statement not covered" >            priority = 1;</span>
         }
-        this.tests[name] = &lt;Validator&gt;{name, priority, validate, message}
+        this.tests[name] = &lt;Validator&gt;{name, priority, validate, message};
 		this.sort();
     }
 	/**
@@ -454,7 +454,7 @@ class Validators {
 			.reduce((_sortedObj, [k,v]) =&gt; ({
 				..._sortedObj,
 				[k]: v
-			}), {})
+			}), {});
 	}
 }
 &nbsp;
@@ -486,15 +486,15 @@ const builtIn: Validator[] = [
     {
         name: 'number',
         priority: 1,
-        validate: <span class="fstat-no" title="function not covered" >(e</span>l: HTMLInputElement): boolean =&gt; {
-<span class="cstat-no" title="statement not covered" >            return !el.value || !isNaN(parseFloat(el.value));</span>
+        validate: (el: HTMLInputElement): boolean =&gt; {
+            return !el.value || !isNaN(parseFloat(el.value));
         }
     },
     {
         name: 'url',
         priority: 1,
-        validate: <span class="fstat-no" title="function not covered" >(e</span>l: HTMLInputElement): boolean =&gt; {
-<span class="cstat-no" title="statement not covered" >            return !!el.value.match(</span>
+        validate: (el: HTMLInputElement): boolean =&gt; {
+            return !!el.value.match(
                 RegExp('[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&amp;//=]*)')
             );
 &nbsp;
@@ -503,15 +503,15 @@ const builtIn: Validator[] = [
     {
         name: 'minlength',
         priority: 1,
-        validate: <span class="fstat-no" title="function not covered" >(e</span>l: HTMLInputElement, length: any): boolean =&gt; {
-<span class="cstat-no" title="statement not covered" >            return !el.value || el.value.length &gt;= parseInt(length);</span>
+        validate: (el: HTMLInputElement, length: any): boolean =&gt; {
+            return !el.value || el.value.length &gt;= parseInt(length);
         }
     },
     {
         name: 'maxlength',
         priority: 1,
         validate: <span class="fstat-no" title="function not covered" >(e</span>l: HTMLInputElement, length: any): boolean =&gt; {
-<span class="cstat-no" title="statement not covered" >            return !el.value || el.value.length &lt;= parseInt(length)</span>
+<span class="cstat-no" title="statement not covered" >            return !el.value || el.value.length &lt;= parseInt(length);</span>
         }
     },
     {
@@ -519,9 +519,9 @@ const builtIn: Validator[] = [
         priority: 1,
         validate: <span class="fstat-no" title="function not covered" >(e</span>l: HTMLInputElement, limit: any): boolean =&gt; {
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (el.type === 'checkbox') {</span>
-<span class="cstat-no" title="statement not covered" >                return groupedElemCount(el) &gt;= parseInt(limit)</span>
+<span class="cstat-no" title="statement not covered" >                return groupedElemCount(el) &gt;= parseInt(limit);</span>
             }
-<span class="cstat-no" title="statement not covered" >            return parseFloat(el.value) &gt;= parseFloat(limit)</span>
+<span class="cstat-no" title="statement not covered" >            return parseFloat(el.value) &gt;= parseFloat(limit);</span>
         }
     },
     {
@@ -529,9 +529,9 @@ const builtIn: Validator[] = [
         priority: 1,
         validate: <span class="fstat-no" title="function not covered" >(e</span>l: HTMLInputElement, limit: any): boolean =&gt; {
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (el.type === 'checkbox') {</span>
-<span class="cstat-no" title="statement not covered" >                return groupedElemCount(el) &lt;= parseInt(limit)</span>
+<span class="cstat-no" title="statement not covered" >                return groupedElemCount(el) &lt;= parseInt(limit);</span>
             }
-<span class="cstat-no" title="statement not covered" >            return parseFloat(el.value) &lt;= parseFloat(limit)</span>
+<span class="cstat-no" title="statement not covered" >            return parseFloat(el.value) &lt;= parseFloat(limit);</span>
         }
     },
     {
@@ -540,7 +540,7 @@ const builtIn: Validator[] = [
         validate: <span class="fstat-no" title="function not covered" >(e</span>l: HTMLInputElement, pattern: any): boolean =&gt; {
             const reg = <span class="cstat-no" title="statement not covered" >new RegExp('^/(.*?)/([gimy]*)$');</span>
             const m = <span class="cstat-no" title="statement not covered" >pattern.match(reg);</span>
-<span class="cstat-no" title="statement not covered" >            return !el.value || (new RegExp(m[1], m[2])).test(el.value)</span>
+<span class="cstat-no" title="statement not covered" >            return !el.value || (new RegExp(m[1], m[2])).test(el.value);</span>
         }
     },
     {
@@ -549,7 +549,7 @@ const builtIn: Validator[] = [
         validate: <span class="fstat-no" title="function not covered" >(e</span>l: HTMLInputElement, selector: any): boolean =&gt; {
             const other = &lt;HTMLInputElement&gt;<span class="cstat-no" title="statement not covered" >document.querySelector(selector);</span>
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (!other) {</span>
-<span class="cstat-no" title="statement not covered" >                Log.error("No query selector found for equals:", selector)</span>
+<span class="cstat-no" title="statement not covered" >                Log.error("No query selector found for equals:", selector);</span>
 <span class="cstat-no" title="statement not covered" >                return false;</span>
             }
 <span class="cstat-no" title="statement not covered" >            return other.value == el.value;</span>
@@ -565,7 +565,7 @@ export const validators = new Validators();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Fri Feb 11 2022 14:41:16 GMT+0000 (Greenwich Mean Time)
+                at Fri Feb 11 2022 17:10:28 GMT+0000 (Greenwich Mean Time)
             </div>
         <script src="../prettify.js"></script>
         <script>
