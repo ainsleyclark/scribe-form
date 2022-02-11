@@ -1,10 +1,13 @@
 /**
  * validation.ts
  *
- * Validation logic for Scribe
+ * Validation instance that validates data attributes on html
+ * input elements. Responsible for adding error and success
+ * classes when inputs have failed/passed validation and adding
+ * messages.
  *
  * @author Ainsley Clark
- * @author URL:   https://ainsley.dev
+ * @author URL: https://ainsley.dev
  * @author Email: hello@ainsley.dev
  */
 import {validators} from "./tests";
@@ -18,9 +21,6 @@ import {ValidateFn, ValidationConfig, ValidationErrors} from "./main";
  */
 const SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, select"
 
-/**
- *
- */
 export class Validation {
     /**
      * Form is the element being validated.
