@@ -1,3 +1,44 @@
+export declare interface ValidationInstance {
+	/**
+	 * Validates the whole form on for errors.
+	 * @param {boolean} silent - Don't mark the field, only return if it passed validation.
+	 * @returns {boolean} - If the form passed validation.
+	 */
+	validate(silent: boolean): boolean
+	/**
+	 * Validates a specific field of the form.
+	 * @param {HTMLElement | Element | string} field - Element or query selector.
+	 * @param {boolean} silent - Don't mark the field, only return if it passed validation.
+	 * @returns {boolean} - If the field passed validation.
+	 */
+	validateField(field: HTMLElement | Element | string, silent: boolean): boolean
+
+	getErrors(field?: HTMLElement | Element | string): ValidationErrors | ValidationErrors[]
+	/**
+	 * Adds a global custom validator.
+	 * @param {string} name - The name of the new validation method i.e. data-validate-range
+	 * @param {ValidateFn} validator - The validate function which should return a boolean indicating it's passed.
+	 * @param {string} message - The message to return if validation failed
+	 * @param {number} priority - The priority of the validator, defaults to 1.
+	 */
+	addValidator(name: string, validator: ValidateFn, message?: string, priority? : number): void
+	/**
+	 * Set the validation global configuration.
+	 * @param {ValidationConfig} config
+	 */
+	setConfig(config: ValidationConfig): void
+	/**
+	 * Resets the form validation removing any invalid messages,
+	 * and error classes from the form.
+	 */
+	reset(): void
+	/**
+	 * Resets the form by removing any invalid messages and error
+	 * classes, and destroys the validation instance.
+	 */
+	destroy(): void
+}
+
 /**
  * The main configuration for the validation library.
  */

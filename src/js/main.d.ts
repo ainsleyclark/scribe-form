@@ -6,30 +6,25 @@ declare interface ScribeInstance {
      * Version number of scribe.
      */
     version(): string;
-
     /**
      * Get the info about current tiny-slider instance
      */
     getInfo(): ScribeInfo;
-
     /**
      * Go to specific slide by index or keywords.
      * @param target the slide to go to (index or a code-word)
      */
     goTo(target: number | 'next' | 'prev' | 'first' | 'last'): void,
-
     /**
      * Determines if the current slide is the first in the form.
      * @returns bool
      */
     isFirstSlide(): boolean
-
     /**
      * Determines if the current slide is the last in the form.
      * @returns bool
      */
     isLastSlide(): boolean
-
     /**
      * TODO
      */

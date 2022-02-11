@@ -39,10 +39,13 @@ class Validation {
 	 * @param priority
 	 * @param message
 	 */
-    add(name: string, validate: ValidateFn, priority: number, message?: string): void {
+    add(name: string, validate: ValidateFn, priority?: number, message?: string): void {
         if (Object.prototype.hasOwnProperty.call(this.tests, name)) {
             Log.error("Validator already exists:", name)
             return;
+        }
+        if (!priority) {
+            priority = 1;
         }
         this.tests[name] = <Validator>{name, priority, validate, message}
 		this.sort();
