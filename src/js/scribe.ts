@@ -9,6 +9,8 @@
 import {Log} from "./common/log";
 import Classes from "./common/classes";
 import {QuestionText} from "./questions/text";
+import {Validation} from "./validation/validation";
+import {ValidationConfig} from "./validation/main";
 
 const VERSION = "1.0.0";
 
@@ -57,6 +59,8 @@ export class Scribe {
      */
     animatingTime = 600;
 
+    validation: Validation
+
     /**
      * Creates a new Scribe instance based of the configuration passed.
      * If no config is passed, scribe defaults will be used.
@@ -76,12 +80,19 @@ export class Scribe {
             e.preventDefault();
         });
 
+        this.validation = new Validation(this.form, <ValidationConfig>{
+            live: false,
+            dataAttribute: 'scribe',
+            showAll: false,
+            classes: {
+                classTo: 'scribe-question',
+            }
+        });
+
         this.listener();
         this.attachControls();
        //x this.attachOk();
         this.addClasses();
-
-        new QuestionText(this.form);
 
      //   this.focusElement(this.getInput(this.list[0]))
     }
@@ -222,9 +233,21 @@ export class Scribe {
             return;
         }
 
+
         // TODO Sanity check array
         const next = this.list[to],
             curr = this.list[this.currentSlide];
+
+
+        const currentInput = this.getInput(curr);
+        if (!currentInput) {
+            return;
+        }
+
+        const valid = this.validation.validateField(currentInput);
+        if (!valid && isForwards) {
+            return;
+        }
 
         this.burst++
 

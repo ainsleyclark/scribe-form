@@ -13,54 +13,60 @@ import {lang} from "./lang";
 import {tmpl} from "./util";
 
 /**
- *
+ * The attributes to search for on the element, either natively
+ * or using the data- selector.
  */
 const ALLOWED_ATTRIBUTES = ['required', 'min', 'max', 'minlength', 'maxlength', 'pattern'];
 
-/**
- *
- */
 export class ValidationElement {
     /**
      *
+     * @type {HTMLElement}
      */
     input: HTMLElement
     /**
      *
+     * @type {Validator[]}
      */
     validators: Validator[] = [];
     /**
      *
+     * @type {{[p: string]: any}}
      */
     params: {
         [key: string]: any
     } = {};
     /**
      *
+     * @type {Map<string, string>}
      */
     messages: Map<string, string> = new Map<string, string>();
     /**
      *
+     * @type {ValidationErrors}
      */
     errors: ValidationErrors = {};
     /**
      *
+     * @type {string}
      */
     dataAttribute: string
+
     /**
      *
-     * @param input
-     * @param dataAttribute
+     * @param {HTMLElement} input
+     * @param {string} dataAttribute
      */
     constructor(input: HTMLElement, dataAttribute: string) {
         this.input = input;
         this.dataAttribute = dataAttribute;
         this.assign();
     }
+
     /**
      *
-     * @param messages
-     * @returns { message: string, valid: boolean }
+     * @param {ValidationMessages} messages
+     * @returns {boolean}
      */
     public validate(messages: ValidationMessages): boolean {
         let valid = true,
@@ -81,24 +87,28 @@ export class ValidationElement {
 
         return valid;
     }
+
     /**
      *
      */
-    public clearErrors() {
+    public clearErrors(): void {
         this.errors = {};
     }
+
     /**
-     * []
+     *
+     * @returns {string[]}
      */
     public errorMessages(): string[] {
         return Object.keys(this.errors).map(key => this.errors[key]);
     }
+
     /**
      *
-     * @param global
-     * @param validator
-     * @param name
-     * @returns string
+     * @param {ValidationMessages} global
+     * @param {Validator} validator
+     * @param {string} name
+     * @returns {string}
      * @private
      */
     private getMessage(global: ValidationMessages, validator: Validator, name: string): string {
@@ -129,6 +139,7 @@ export class ValidationElement {
 
         return "Please enter a correct value";
     }
+
     /**
      *
      * @private
@@ -137,6 +148,9 @@ export class ValidationElement {
         Array.from(this.input.attributes).forEach(attr => {
             const reg = new RegExp(`^data-${this.dataAttribute}-`);
             if (reg.test(attr.name)) {
+
+                console.log(this.dataAttribute);
+
                 let name = <string>attr.name.substr(6 + this.dataAttribute.length);
                 if (name.includes("message")) {
                     this.messages.set(name.replace("-message", ""), attr.value);
@@ -154,11 +168,12 @@ export class ValidationElement {
             }
         });
     }
+
     /**
      * For use with the init function. Adds an array of validators, parameters
      * for the validator, name and a value if there is one attached.
-     * @param name
-     * @param value
+     * @param {string} name
+     * @param {string} value
      * @private
      */
     private addValidatorToField(name: string, value?: string): void {

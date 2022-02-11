@@ -100,12 +100,10 @@ const tests: Validator[] = [
         name: 'url',
         priority: 1,
         validate: (el: HTMLInputElement): boolean => {
-            try {
-                new URL(el.value);
-            } catch (_) {
-                return false;
-            }
-            return true;
+            return !!el.value.match(
+                RegExp('[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)')
+            );
+
         }
     },
     {

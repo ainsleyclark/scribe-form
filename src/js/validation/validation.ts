@@ -188,6 +188,9 @@ export class Validation {
         if (config.showAll !== undefined) {
             this.showAll = config.showAll;
         }
+        if (config.dataAttribute !== undefined) {
+            this.dataAttribute = config.dataAttribute;
+        }
         if (config.classes) {
             this.classes = {...this.classes, ...config.classes};
         }
@@ -232,7 +235,7 @@ export class Validation {
         }
 
         // Remove the success class from the container.
-        Classes.remove(container, '.' + this.classes.successClass);
+        Classes.remove(container, this.classes.successClass);
 
         // Bail if the validation already has been marked as invalid.
         if (Classes.has(container, this.classes.errorClass)) {
@@ -275,6 +278,12 @@ export class Validation {
         if (message) {
             container.removeChild(message);
         }
+
+        // Add the success class to the container, add a delay, so it can be
+        // transitioned via CSS.
+        setTimeout(() => {
+            Classes.add(container, this.classes.successClass);
+        }, 10);
     }
 
     /**
@@ -322,7 +331,7 @@ export class Validation {
 
         // Check the html element exists in the current
         // fields, if there is no match, bail.
-        const el = this.fields.find(f => f.input === field);
+        const el = this.fields.find(f => f.input.isEqualNode(<Node>field));
         if (!el) {
             Log.error("Field not found in form:", field)
             return null;

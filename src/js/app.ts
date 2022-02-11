@@ -9,6 +9,7 @@
 /* eslint-disable */
 
 import {Validation} from "./validation/validation";
+import {Scribe} from "./scribe";
 
 // new Scribe({
 //     form: ".scribe-form",
@@ -20,17 +21,11 @@ import {Validation} from "./validation/validation";
 const form = document.querySelector(".scribe-form") as HTMLFormElement,
 	input = document.querySelector("[name='first-name']") as HTMLInputElement;
 if (form) {
-	const validation = new Validation(form, {
-		live: true,
-		classes: {
-			classTo: 'scribe-question',
-		}
-	});
+	new Scribe({
+		form: form,
+	} as ScribeConfig);
 
-	validation.addValidator('test', (el: HTMLElement, param1: any, param2: any): boolean => {
-		console.log(el, param1, param2)
-		return false;
-	}, "something fucked up ${1} and ${2}", 0)
+
 
 
 
