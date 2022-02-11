@@ -153,7 +153,7 @@ export class Validation {
      * @returns {ValidationErrors | ValidationErrors[]}
      */
     public getErrors(field?: HTMLElement | Element | string): ValidationErrors | ValidationErrors[] {
-        let errors: ValidationErrors[] = [];
+        const errors: ValidationErrors[] = [];
         if (field) {
             const el = this.findField(field);
             if (!el) {
@@ -300,7 +300,7 @@ export class Validation {
      * @private
      */
     private listener(el: ValidationElement, add = true): void {
-        let listener = ~['radio', 'checkbox'].indexOf(el.input.getAttribute('type') || 'input') ? 'change' : 'input';
+        const listener = ~['radio', 'checkbox'].indexOf(el.input.getAttribute('type') || 'input') ? 'change' : 'input';
         el.input.removeEventListener(listener, this.boundEventListener, false)
         if (add) {
             el.input.addEventListener(listener, this.boundEventListener, false);

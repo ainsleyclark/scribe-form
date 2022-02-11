@@ -84,6 +84,7 @@ const tests: Validator[] = [
         priority: 1,
         validate: (el: HTMLInputElement): boolean => {
             return !!el.value.match(
+                // eslint-disable-next-line no-useless-escape
                 /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
             );
         }

@@ -6,6 +6,8 @@
  * @author Email: hello@ainsley.dev
  */
 
+/* eslint-disable */
+
 import {Validation} from "./validation/validation";
 
 // new Scribe({
@@ -38,6 +40,8 @@ if (form) {
 		// d});
 	});
 }
+
+/* eslint-enable */
 
 
 
