@@ -56,6 +56,17 @@ export class Validation {
      * @private
      */
     private live = false;
+    /**
+     *
+     * @private
+     */
+    private showAll = false;
+    /**
+     *
+     * @private
+     */
+    private readonly boundEventListener: (e: Event) => void
+
 
     /**
      * Creates a new Validation instance, form is either an element
@@ -76,31 +87,30 @@ export class Validation {
 
         this.form = <HTMLFormElement>form;
 
-        if (config) {
-            this.setConfig(config);
-        }
-
-        this.init();
-    }
-    /**
-     * Sets form attributes and construct the forms fields.
-     * @private
-     */
-    private init(): void {
         // Add novalidate attribute to form to ensure there's no
         // nasty HTML5 attributes being added.
         this.form.setAttribute("novalidate", "true");
 
+        if (config) {
+            this.setConfig(config);
+        }
+
+        this.boundEventListener = (p: Event) => this.validateField(<HTMLElement>p.target);
+
+        this.assignFields();
+    }
+    /**
+     * Sets form attributes and construct the forms fields. CHANGE
+     * @private
+     */
+    private assignFields(): void {
         // Initialises the fields with new Validation elements.
         this.fields = Array.from(this.form.querySelectorAll(SELECTORS)).map(input => {
             const el = new ValidationElement(<HTMLElement>input, this.dataAttribute);
 
             // Attach event listener to input if live is set.
             if (this.live) {
-                let type = el.input.getAttribute('type') || 'input' ;
-                el.input.addEventListener(~['radio', 'checkbox'].indexOf(type) ? 'change' : 'input', () => {
-                    this.validateField(el.input);
-                })
+                this.listener(el);
             }
 
             return el;
@@ -112,14 +122,17 @@ export class Validation {
      * @private
      */
     public setConfig(config: ValidationConfig): void {
+        if (config.live !== undefined) {
+            this.live = config.live;
+        }
+        if (config.showAll !== undefined) {
+            this.showAll = config.showAll;
+        }
         if (config.classes) {
             this.classes = {...this.classes, ...config.classes};
         }
         if (config.messages) {
             this.messages = {...this.messages, ...config.messages};
-        }
-        if (config.live) {
-            this.live = config.live;
         }
     }
     /**
@@ -142,43 +155,35 @@ export class Validation {
      * @returns boolean
      */
     public validateField(field: HTMLElement | Element | string, silent = false): boolean {
-        if (typeof field === 'string') {
-            field = <HTMLElement>document.querySelector(field);
-        }
-
-        // Check the html element exists in the current
-        // fields, if there is no match, bail.
-        const el = this.fields.find(f => f.input === field);
+        const el = this.findField(field);
         if (!el) {
-            Log.error("Field not found in form:", field)
             return false;
         }
 
         // Validate and mark/unmark the field.
-        const validate = el.validate(this.messages);
-
-        console.log(validate);
-
-        if (!validate.valid && !silent) {
-            console.log(validate);
-            this.mark(el.input, validate.message);
+        const valid = el.validate(this.messages);
+        if (!valid && !silent) {
+            this.mark(el.input, el.errorMessages());
         } else if (!silent) {
             this.unmark(el.input);
         }
 
-        return validate.valid;
+        return valid;
     }
     /**
      *
+     * @param field
      */
-    public getErrors(field: HTMLElement | Element | string | null): ValidationErrors | ValidationErrors[] {
-        return [];
-
-        // let errors: ScribeValidationErrors[] = [];
-        // this.fields.forEach(field => {
-        //     errors.push(field.errors);
-        // })
-        // return errors;
+    public getErrors(field?: HTMLElement | Element | string): ValidationErrors | ValidationErrors[] {
+        let errors: ValidationErrors[] = [];
+        if (field) {
+            const el = this.findField(field);
+            if (!el) {
+                return errors;
+            }
+            return el.errors;
+        }
+        return this.fields.map(f => f.errors);
     }
     /**
      * Resets the form validation removing any invalid messages,
@@ -196,6 +201,7 @@ export class Validation {
      */
     public destroy(): void {
         this.reset();
+        this.fields.forEach(el => this.listener(el, false));
         this.fields = [];
     }
     /**
@@ -207,32 +213,37 @@ export class Validation {
      */
     public addValidator(name: string, validator: ValidateFn, message: string, priority: number): void {
         validators.add(name, validator, priority, message);
+        this.fields = [];
+        this.assignFields();
     }
     /**
      * Mark the field container invalid and adds a message to the
      * end of the containers HTML.
      * @param field
-     * @param message
+     * @param errors
      * @private
      */
-    private mark(field: HTMLElement, message: string): void {
+    private mark(field: HTMLElement, errors: string[]): void {
         const container = <HTMLElement>field.closest('.' + this.classes.classTo);
         if (!container) {
             Log.error('Container not found in DOM:', this.classes.classTo);
             return;
         }
 
+        // Remove the success class from the container.
+        Classes.remove(container, '.' + this.classes.successClass);
+
         // Bail if the validation already has been marked as invalid.
         if (Classes.has(container, this.classes.errorClass)) {
             const msg = container.querySelector('.' + this.classes.errorClass);
             if (msg) {
-                msg.innerHTML = message;
+                msg.innerHTML = errors[0];
             }
             return;
         }
 
         // Append the error message to the container.
-        const tag = `<${this.classes.errorTextTag} class="${this.classes.errorClass}">${message}</${this.classes.errorTextTag}>`
+        const tag = `<${this.classes.errorTextTag} class="${this.classes.errorClass}">${errors[0]}</${this.classes.errorTextTag}>`
         container.insertAdjacentHTML('beforeend', tag);
 
         // Add the error class to the container, add a delay, so it can be
@@ -262,5 +273,42 @@ export class Validation {
         if (message) {
             container.removeChild(message);
         }
+    }
+    /**
+     * Removes the validation event listener from a ValidationElement. If add is
+     * false, the listeners will only be removed and not added.
+     * @param el {ValidationElement}
+     * @param add {boolean} - Determines if the event listener should be added.
+     * @private
+     */
+    private listener(el: ValidationElement, add = true): void {
+        let listener = ~['radio', 'checkbox'].indexOf(el.input.getAttribute('type') || 'input') ? 'change' : 'input';
+        el.input.removeEventListener(listener, this.boundEventListener, false)
+        if (add) {
+            el.input.addEventListener(listener, this.boundEventListener, false);
+        }
+    }
+    /**
+     * Retrieves a ValidationElement based on the input. If the element
+     * could not be found in the fields, an error will be logged and null
+     * returned.
+     * @param field {HTMLElement | Element | string}
+     * @returns {ValidationElement | null}
+     * @private
+     */
+    private findField(field: HTMLElement | Element | string): ValidationElement | null {
+        if (typeof field === 'string') {
+            field = <HTMLElement>document.querySelector(field);
+        }
+
+        // Check the html element exists in the current
+        // fields, if there is no match, bail.
+        const el = this.fields.find(f => f.input === field);
+        if (!el) {
+            Log.error("Field not found in form:", field)
+            return null;
+        }
+
+        return el;
     }
 }

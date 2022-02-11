@@ -1,10 +1,10 @@
 /**
- *
+ * The main configuration for the validation library.
  */
 export declare type ValidationConfig = {
 	/**
-	 * A boolean value indicating whether pristine should validate
-	 * as you type
+	 * A boolean value indicating whether validation should validate
+	 * as you type.
 	 * @default false.
 	 */
 	live?: boolean
@@ -14,6 +14,12 @@ export declare type ValidationConfig = {
 	 * @default validation
 	 */
 	dataAttribute?: string
+	/**
+	 * Determines if all the error messages should be shown. If set
+	 * to false, only one error message will be appended.
+	 * @default false
+	 */
+	showAll?: boolean
 	/**
 	 * Optional classes configuration.
 	 */

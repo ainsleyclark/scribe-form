@@ -25,14 +25,18 @@ if (form) {
 		}
 	});
 
+	validation.addValidator('test', (el: HTMLElement, param1: any, param2: any): boolean => {
+		console.log(el, param1, param2)
+		return false;
+	}, "something fucked up ${1} and ${2}", 0)
 
 
-	// form.querySelectorAll("input:not([type^=hidden]):not([type^=submit]), textarea, select").forEach(input => {
-	// 	input.addEventListener("blur", e => {
-	// 		validation.validate();
-	// 		//console.log(validation.getErrors())
-	// 	});
-//	})
+
+	form.querySelectorAll("input:not([type^=hidden]):not([type^=submit]), textarea, select").forEach(input => {
+		//input.addEventListener("input", e => {
+		//	console.log(validation.getErrors());
+		// d});
+	});
 }
 
 

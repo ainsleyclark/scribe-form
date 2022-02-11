@@ -1,5 +1,5 @@
 /**
- * validation.ts
+ * element.ts
  *
  * TODO
  *
@@ -57,20 +57,12 @@ export class ValidationElement {
         this.dataAttribute = dataAttribute;
         this.assign();
     }
-
-    /**
-     *
-     */
-    public clearErrors() {
-        this.errors = {};
-    }
-
     /**
      *
      * @param messages
      * @returns { message: string, valid: boolean }
      */
-    public validate(messages: ValidationMessages): { message: string, valid: boolean } {
+    public validate(messages: ValidationMessages): boolean {
         let valid = true,
             message = '';
 
@@ -83,15 +75,24 @@ export class ValidationElement {
             if (!isValid) {
                 valid = false;
                 message = tmpl.apply(this.getMessage(messages, validator, name), params);
+                this.errors[name] = message;
             }
         });
 
-        return {
-            message: message,
-            valid: valid,
-        };
+        return valid;
     }
-
+    /**
+     *
+     */
+    public clearErrors() {
+        this.errors = {};
+    }
+    /**
+     * []
+     */
+    public errorMessages(): string[] {
+        return Object.keys(this.errors).map(key => this.errors[key]);
+    }
     /**
      *
      * @param global
@@ -128,7 +129,6 @@ export class ValidationElement {
 
         return "Please enter a correct value";
     }
-
     /**
      *
      * @private
@@ -154,7 +154,6 @@ export class ValidationElement {
             }
         });
     }
-
     /**
      * For use with the init function. Adds an array of validators, parameters
      * for the validator, name and a value if there is one attached.
@@ -183,6 +182,7 @@ export class ValidationElement {
         if (!value) {
             return;
         }
+
         const values = (name === "pattern" ? [value] : value.split(',')) as any[];
         values.unshift(null); // Placeholder for HTML Element, when validation.
         this.params[name] = values;
