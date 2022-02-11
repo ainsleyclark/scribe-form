@@ -1,7 +1,9 @@
 /**
  * element.ts
  *
- * TODO
+ * Element is a singular field for validation. It's used
+ * for building up validation functions on an HTML entity by
+ * storing error messages, parameters and validators.
  *
  * @author Ainsley Clark
  * @author URL:   https://ainsley.dev
@@ -20,40 +22,42 @@ const ALLOWED_ATTRIBUTES = ['required', 'min', 'max', 'minlength', 'maxlength', 
 
 export class ValidationElement {
     /**
-     *
+     * The HTMLElement being validated
      * @type {HTMLElement}
      */
     input: HTMLElement
     /**
-     *
+     * The array of validators to check against.
      * @type {Validator[]}
      */
     validators: Validator[] = [];
     /**
-     *
+     * The key value pair of parameters to pass to the validator.
      * @type {{[p: string]: any}}
      */
     params: {
         [key: string]: any
     } = {};
     /**
-     *
+     * Map of messages attached to the element, for example:
+     * data-validate-required-message="hello"
      * @type {Map<string, string>}
      */
     messages: Map<string, string> = new Map<string, string>();
     /**
-     *
+     * The object of validation errors that have occurred during
+     * validation.
      * @type {ValidationErrors}
      */
     errors: ValidationErrors = {};
     /**
-     *
+     * The data attribute that should be checked.
      * @type {string}
      */
     dataAttribute: string
 
     /**
-     *
+     * Creates a new Validation element.
      * @param {HTMLElement} input
      * @param {string} dataAttribute
      */
@@ -64,9 +68,10 @@ export class ValidationElement {
     }
 
     /**
-     *
-     * @param {ValidationMessages} messages
-     * @returns {boolean}
+     * Validates the element by applying the validator function and
+     * assigns the error message if there is any.
+     * @param {ValidationMessages} messages - Globally set messages.
+     * @returns {boolean} - True if the field passed validation.
      */
     public validate(messages: ValidationMessages): boolean {
         let valid = true,
@@ -89,14 +94,15 @@ export class ValidationElement {
     }
 
     /**
-     *
+     * Clears out any validation errors from the element.
      */
     public clearErrors(): void {
         this.errors = {};
     }
 
     /**
-     *
+     * Retrieves a string slice of errors messages without
+     * their name.
      * @returns {string[]}
      */
     public errorMessages(): string[] {
@@ -104,7 +110,12 @@ export class ValidationElement {
     }
 
     /**
-     *
+     * Obtains the validation error message. Lookup order:
+     *  1) On the field as a data attribute.
+     *  2) On the validator itself (user defined validators).
+     *  3) On the globally defined validator messages.
+     *  4) From lang.
+     *  5) Generic message.
      * @param {ValidationMessages} global
      * @param {Validator} validator
      * @param {string} name
@@ -112,17 +123,17 @@ export class ValidationElement {
      * @private
      */
     private getMessage(global: ValidationMessages, validator: Validator, name: string): string {
-        // First check if there is a message within the
-        // validator, as that's where to user defined messages are.
-        if (validator.message) {
-            return validator.message
-        }
-
         // Check if there is a message attached to the field
         // i.e (data attribute).
         const attr = this.messages.get(name);
         if (attr) {
             return attr
+        }
+
+        // Check if there is a message within the
+        // validator, as that's where to user defined messages are.
+        if (validator.message) {
+            return validator.message
         }
 
         // Fall back to the global messages.
@@ -141,16 +152,18 @@ export class ValidationElement {
     }
 
     /**
-     *
+     * Assigns the input to the class by looping over the input
+     * attributes and checking them against the allowed attributes.
+     * Lookup order:
+     *  1) From the data attribute.
+     *  2) From the allowed attributes, i.e. data-validate-required
+     *  3) From the type (HTML5 native).
      * @private
      */
     private assign() {
         Array.from(this.input.attributes).forEach(attr => {
             const reg = new RegExp(`^data-${this.dataAttribute}-`);
             if (reg.test(attr.name)) {
-
-                console.log(this.dataAttribute);
-
                 let name = <string>attr.name.substr(6 + this.dataAttribute.length);
                 if (name.includes("message")) {
                     this.messages.set(name.replace("-message", ""), attr.value);
