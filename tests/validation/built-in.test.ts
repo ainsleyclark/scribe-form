@@ -1,4 +1,4 @@
-import {validators} from "../../src/js/validation/built-in";
+import {validators} from '../../src/js/validation/built-in';
 
 type Cases = {
     input: string,
@@ -12,58 +12,145 @@ const setup = (input: string): HTMLInputElement => {
     return el;
 };
 
-describe('emails should be validated', () => {
-    const cases: Cases[] = [
-        {input: "user@email.com", want: true},
-        {input: "user@email.com", want: true},
-        {input: "email.com", want: false},
-        {input: "user@", want: false},
-        {input: "useremail.com", want: false},
-    ];
+describe('Validator Class', () => {
 
-    test.each(cases)(test.name, test => {
-        expect(validators.tests['email'].validate(setup(test.input))).toEqual(test.want);
+    describe('add()', () => {
+
+    });
+
+    describe('sort()', () => {
+
     });
 });
 
-describe('number should be validated', () => {
-    const cases: Cases[] = [
-        {input: "0", want: true},
-        {input: "1", want: true},
-        {input: "1.1", want: true},
-        {input: "9.999", want: true},
-        {input: "wrong", want: false},
-    ];
+describe('Tests', () => {
+    beforeEach(() => {
+        document.body.innerHTML = '';
+    });
 
-    test.each(cases)("validateEmail(%s) should be %s", test => {
-        expect(validators.tests['number'].validate(setup(test.input))).toEqual(test.want);
+    describe('Emails should be validated', () => {
+        const cases: Cases[] = [
+            {input: 'user@email.com', want: true},
+            {input: 'user@email.com', want: true},
+            {input: 'email.com', want: false},
+            {input: 'user@', want: false},
+            {input: 'useremail.com', want: false},
+        ];
+
+        test.each(cases)(('.email($input) returns $want'), test => {
+            expect(validators.tests['email'].validate(setup(test.input))).toEqual(test.want);
+        });
+    });
+
+    describe('Number should be validated', () => {
+        const cases: Cases[] = [
+            {input: '0', want: true},
+            {input: '1', want: true},
+            {input: '1.1', want: true},
+            {input: '9.999', want: true},
+            {input: 'wrong', want: false},
+        ];
+
+        test.each(cases)('.number($input) returns $want', test => {
+            expect(validators.tests['number'].validate(setup(test.input))).toEqual(test.want);
+        });
+    });
+
+    describe('URL should be validated', () => {
+        const cases: Cases[] = [
+            {input: 'https://google.com', want: true},
+            {input: 'http://google.com', want: true},
+            {input: 'www.google.com', want: true},
+            {input: 'google.com', want: true},
+            {input: 'www.', want: false},
+            {input: 'wrong', want: false},
+            {input: 'hello.', want: false},
+        ];
+
+        test.each(cases)('.url($input) returns $want', test => {
+            expect(validators.tests['url'].validate(setup(test.input))).toEqual(test.want);
+        });
+    });
+
+    describe('Min length should be validated', () => {
+        const cases: Cases[] = [
+            {input: 'hello', param: '1', want: true},
+            {input: 'hello', param: '10', want: false},
+            {input: 'hello', param: '5', want: true}
+        ];
+
+        test.each(cases)('.minlength($input, $param) returns $want', test => {
+            expect(validators.tests['minlength'].validate(setup(test.input), test.param)).toEqual(test.want);
+        });
+    });
+
+    describe('Max Length should be validated', () => {
+        const cases: Cases[] = [
+            {input: 'hello', param: '1', want: false},
+            {input: 'hello', param: '10', want: true},
+            {input: 'hello', param: '5', want: true}
+        ];
+
+        test.each(cases)('.maxlength($input, $param) returns $want', test => {
+            expect(validators.tests['maxlength'].validate(setup(test.input), test.param)).toEqual(test.want);
+        });
+    });
+
+    describe('Min should be validated', () => {
+        const cases: Cases[] = [
+            {input: '1', param: '10', want: false},
+            {input: '10', param: '1', want: true},
+            {input: '5', param: '5', want: true},
+        ];
+
+        test.each(cases)('.min($input, $param) returns $want', test => {
+            expect(validators.tests['min'].validate(setup(test.input), test.param)).toEqual(test.want);
+        });
+    });
+
+    describe('Max should be validated', () => {
+        const cases: Cases[] = [
+            {input: '1', param: '10', want: true},
+            {input: '10', param: '1', want: false},
+            {input: '5', param: '5', want: true},
+        ];
+
+        test.each(cases)('.max($input, $param) returns $want', test => {
+            expect(validators.tests['max'].validate(setup(test.input), test.param)).toEqual(test.want);
+        });
+    });
+
+    describe('Pattern should be validated', () => {
+        const cases: Cases[] = [
+            {input: 'abc', param: '/[a-z]+$/i', want: true},
+            {input: '1', param: '/[a-z]+$/i', want: false},
+            {input: '1', param: '/[a-z0-9]+$/i', want: true},
+            {input: '@', param: '/[a-z0-9]+$/i', want: false},
+        ];
+
+        test.each(cases)('.pattern($input, $param) returns $want', test => {
+            expect(validators.tests['pattern'].validate(setup(test.input), test.param)).toEqual(test.want);
+        });
+    });
+
+    describe('Equals should be validated', () => {
+        const cases: Cases[] = [
+            {input: 'wrong', param: 'equal', want: false},
+            {input: 'equal', param: 'equal', want: true},
+        ];
+
+        test.each(cases)('.equals($input, $param) returns $want', test => {
+            const input = document.createElement("input");
+            input.setAttribute("id", "selector");
+            input.value = test.param;
+            document.body.appendChild(input);
+
+            expect(validators.tests['equals'].validate(setup(test.input), "#selector")).toEqual(test.want);
+        });
+
+        test(".equals(empty, empty) returns false", () => {
+            expect(validators.tests['equals'].validate(setup("test"), "#wrong")).toEqual(false);
+        });
     });
 });
 
-describe('url should be validated', () => {
-    const cases: Cases[] = [
-        {input: "https://google.com", want: true},
-        {input: "http://google.com", want: true},
-        {input: "www.google.com", want: true},
-        {input: "google.com", want: true},
-        {input: "www.", want: false},
-        {input: "wrong", want: false},
-        {input: "hello.", want: false},
-    ];
-
-    test.each(cases)("validateEmail(%s) should be %s", test => {
-        expect(validators.tests['url'].validate(setup(test.input))).toEqual(test.want);
-    });
-});
-
-describe('minlength should be validated', () => {
-    const cases: Cases[] = [
-        {input: "hello", param: "1", want: true},
-        {input: "hello", param: "10", want: false},
-
-    ];
-
-    test.each(cases)("validateEmail(%s) should be %s", test => {
-        expect(validators.tests['minlength'].validate(setup(test.input), test.param)).toEqual(test.want);
-    });
-});

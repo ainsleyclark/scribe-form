@@ -2,7 +2,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  verbose: false,
+  verbose: true,
   silent: false,
   "collectCoverage": true,
   "coverageReporters": ["json", "html"],
