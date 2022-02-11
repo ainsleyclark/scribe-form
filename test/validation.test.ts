@@ -1,4 +1,4 @@
-import {Validation} from "../validation";
+import {Validation} from "../src/js/validation/validation";
 
 const val = new Validation(document.createElement("form")) as any; //es-lint disable
 

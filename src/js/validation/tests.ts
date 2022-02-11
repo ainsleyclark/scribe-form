@@ -1,9 +1,8 @@
 /**
  * tests.ts
  *
- * Built in validators and definitions for validation
- * including the Validation class for adding user
- * defined validation functions.
+ * Built in validators and definitions for validation including the
+ * Validation class for adding user defined validation functions.
  *
  * @author Ainsley Clark
  * @author URL:   https://ainsley.dev

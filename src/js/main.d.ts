@@ -30,7 +30,6 @@ declare interface ScribeInstance {
      */
     validate(): boolean,
 }
-
 /**
  * Configuration for Scribe that is passed when a
  * new instance is created.
@@ -42,7 +41,7 @@ declare interface ScribeConfig {
      */
     form?: HTMLFormElement | string;
     /**
-     * The amount of ms to animate the questions
+     *
      * @default 600
      */
     speed?: number
@@ -87,4 +86,3 @@ declare interface ScribeInfo {
     progress: number,
     navContainer?: HTMLElement
 }
-

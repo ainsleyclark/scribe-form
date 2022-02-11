@@ -1,6 +1,8 @@
 /**
  * scribe.js
+ *
  * Scribe class for forms.
+ *
  * @author Ainsley Clark
  * @author URL:   https://ainsley.dev
  * @author Email: hello@ainsley.dev
@@ -40,26 +42,37 @@ export class Scribe {
     }
     /**
      * The main HTML Form element to use.
+     * @type {HTMLFormElement}
      */
     form: HTMLFormElement;
     /**
-     *
+     * TODO: Add jsDoc
+     * @type {Validation}
      */
-    list: HTMLLIElement[];
-    /**
-     * TODO
-     */
-    currentSlide = 0;
-    /**
-     * TODO
-     */
-    burst = 0;
-    /**
-     * TODO
-     */
-    animatingTime = 600;
-
     validation: Validation
+    /**
+     * TODO: Add jsDoc
+     * @type {HTMLElement[]}
+     */
+    list: HTMLElement[];
+    /**
+     * TODO: Add jsDoc
+     * @type {number}
+     * @private
+     */
+    private currentSlide = 0;
+    /**
+     * TODO: Add jsDoc
+     * @type {number}
+     * @private
+     */
+    private burst = 0;
+    /**
+     * TODO: Add jsDoc
+     * @type {number}
+     * @private
+     */
+    private animatingTime = 600;
 
     /**
      * Creates a new Scribe instance based of the configuration passed.
@@ -106,8 +119,8 @@ export class Scribe {
     }
 
     /**
-     *
-     * @param target
+     * TODO: Add jsDoc
+     * @param {number | "next" | "prev" | "first" | "last"} target
      */
     public goTo(target: number | 'next' | 'prev' | 'first' | 'last'): void {
         if (typeof target === 'number') {
@@ -133,7 +146,7 @@ export class Scribe {
     }
 
     /**
-     *
+     * TODO: Add jsDoc
      * @private
      */
     private listener(): void {
@@ -153,7 +166,7 @@ export class Scribe {
 
     /**
      * Determines if the current slide is the first in the form.
-     * @returns bool
+     * @returns {boolean}
      */
     public isFirstSlide(): boolean {
         return this.currentSlide === 0;
@@ -168,9 +181,8 @@ export class Scribe {
     }
 
     /**
-     * Obtains Scribe information.
-     * TODO: Add navContainer etc.
-     * @returns ScribeInfo
+     * TODO: jsDoc
+     * @returns {ScribeInfo}
      */
     public getInfo(): ScribeInfo {
         return <ScribeInfo>{
@@ -188,6 +200,8 @@ export class Scribe {
 
     /**
      *
+     * @returns {number}
+     * @private
      */
     private progress(): number {
         return (this.currentSlide / this.list.length) * 100
@@ -195,7 +209,7 @@ export class Scribe {
 
     /**
      *
-     * @returns bool
+     * @returns {boolean}
      */
     public validate(): boolean {
         return true
@@ -220,8 +234,8 @@ export class Scribe {
 
     /**
      *
+     * @param {number} to
      * @private
-     * @param to
      */
     private animate(to: number) {
         const isForwards = to > this.currentSlide;
