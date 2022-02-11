@@ -30,6 +30,4 @@ node_modules
 *.sw?
 
 # Coverage Files
-coverage/*
-!coverage/coverage-final.json
-!coverage/coverage-summary.json
+coverage
