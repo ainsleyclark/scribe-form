@@ -4,6 +4,7 @@
 		<title>Scribe Form</title>
 <!--		<link rel="stylesheet" href="/css/app.css">-->
 		<link rel="preload" href="/js/app.js" as="script">
+		<script src="../src/js/validation/element.ts"></script>
 	</head>
 	<body>
 		<!-- Header -->
@@ -20,12 +21,12 @@
 			<!-- First Name -->
 			<fieldset class="scribe-question" data-scribe-type="text">
 				<label for="q1">What's your first name?</label>
-				<input id="q1" name="first-name" type="text" data-scribe-required data-scribe-minlength="20" data-scribe-required-message="TESTTTT" />
+				<input id="q1" name="first-name" type="text" data-validate-required data-validate-minlength="20" data-validate-required-message="TESTTTT" />
 			</fieldset>
 			<!-- First Name -->
 			<fieldset class="scribe-question" data-scribe-type="text">
 				<label for="q4">What's your message?</label>
-				<textarea id="q4" name="message" data-scribe-required data-scribe-equals="#q1"></textarea>
+				<textarea id="q4" name="message" data-scribe-required data-validate-equals="#q1"></textarea>
 			</fieldset>
 			<!-- Last Name -->
 <!--			<fieldset class="scribe-question" data-scribe-type="text">-->

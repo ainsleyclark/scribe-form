@@ -8,8 +8,14 @@ export function tmpl(this: any): string {
 
 /**
  *
- * @param obj
+ * @param el
  */
-export function isEmptyObject(obj: any): boolean {
-	return obj && Object.keys(obj).length === 0 && Object.getPrototypeOf(obj) === Object.prototype
+export function groupedElemCount(el: HTMLInputElement): number {
+	const form = el.closest('form');
+	if (!form) {
+		return 0;
+	}
+	return form
+		.querySelectorAll('input[name="' + el.getAttribute('name') + '"]:checked')
+		.length;
 }

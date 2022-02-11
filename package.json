@@ -9,6 +9,9 @@
 		"type": "git",
 		"url": "git+https://github.com/ainsleyclark/scribe-form.git"
 	},
+	"tags": [
+
+	],
 	"scripts": {
 		"dev": "npm run development",
 		"development": "mix",

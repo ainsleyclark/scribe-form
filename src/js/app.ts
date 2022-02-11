@@ -14,18 +14,25 @@ import {Validation} from "./validation/validation";
 // }) as ScribeInstance;
 
 
+
 const form = document.querySelector(".scribe-form") as HTMLFormElement,
 	input = document.querySelector("[name='first-name']") as HTMLInputElement;
 if (form) {
-	const validation = new Validation(form);
+	const validation = new Validation(form, {
+		live: true,
+		classes: {
+			classTo: 'scribe-question',
+		}
+	});
 
 
-	form.querySelectorAll("input:not([type^=hidden]):not([type^=submit]), textarea, select").forEach(input => {
-		input.addEventListener("blur", e => {
-			validation.validate();
-			//console.log(validation.getErrors())
-		});
-	})
+
+	// form.querySelectorAll("input:not([type^=hidden]):not([type^=submit]), textarea, select").forEach(input => {
+	// 	input.addEventListener("blur", e => {
+	// 		validation.validate();
+	// 		//console.log(validation.getErrors())
+	// 	});
+//	})
 }
 
 

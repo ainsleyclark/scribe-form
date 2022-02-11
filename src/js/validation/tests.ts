@@ -9,6 +9,8 @@
  * @author URL:   https://ainsley.dev
  * @author Email: hello@ainsley.dev
  */
+import {ValidateFn, Validator} from "./main";
+import {groupedElemCount} from "./util";
 import {Log} from "../common/log";
 
 /**
@@ -16,7 +18,10 @@ import {Log} from "../common/log";
  * and adding any custom user validation functions.
  */
 class Validation {
-    tests: { [key: string]: Validator }
+	/**
+	 * The key, value pairs of validators.
+	 */
+    tests: { [name: string]: Validator }
 
     /**
      * Creates a new Validation type and initialises built in
@@ -24,23 +29,36 @@ class Validation {
      */
     constructor() {
         this.tests = {};
-        tests.forEach(test => this.tests[test.name] = test);
+        tests.forEach(test => this.add(test.name, test.validate, test.priority));
     }
-
     /**
-     * Adds a validator to the tests object.
-     * If a validator already exists, the function will return.
-     * @param name
-     * @param validate
-     * @param priority
-     */
-    add(name: string, validate: ValidateFn, priority: number): void {
+	 * Adds a validator to the tests object.
+	 * If a validator already exists, the function will return.
+	 * @param name
+	 * @param validate
+	 * @param priority
+	 * @param message
+	 */
+    add(name: string, validate: ValidateFn, priority: number, message?: string): void {
         if (Object.prototype.hasOwnProperty.call(this.tests, name)) {
             Log.error("Validator already exists:", name)
             return;
         }
-        this.tests[name] = <Validator>{name, priority, validate}
+        this.tests[name] = <Validator>{name, priority, validate, message}
+		this.sort();
     }
+	/**
+	 * Sorts the tests' priority in ascending order.
+	 */
+	sort() {
+		this.tests = Object
+			.entries(this.tests)
+			.sort((a, b) => b[1].priority - a[1].priority)
+			.reduce((_sortedObj, [k,v]) => ({
+				..._sortedObj,
+				[k]: v
+			}), {})
+	}
 }
 
 /**
@@ -53,7 +71,7 @@ const tests: Validator[] = [
         validate: (el: HTMLInputElement): boolean => {
             const value = el.value;
             if (el.type === 'radio' || el.type === 'checkbox') {
-
+                return groupedElemCount(el) === 0;
             }
             return value !== undefined && value !== '';
         }
@@ -77,7 +95,7 @@ const tests: Validator[] = [
     {
         name: 'url',
         priority: 1,
-        validate: (el: HTMLInputElement, length: number): boolean => {
+        validate: (el: HTMLInputElement): boolean => {
             try {
                 new URL(el.value);
             } catch (_) {
@@ -104,7 +122,9 @@ const tests: Validator[] = [
         name: 'min',
         priority: 1,
         validate: (el: HTMLInputElement, limit: any): boolean => {
-            // TODO: Need to account for checkboxes
+            if (el.type === 'checkbox') {
+                return groupedElemCount(el) >= parseInt(limit)
+            }
             return parseFloat(el.value) >= parseFloat(limit)
         }
     },
@@ -112,7 +132,9 @@ const tests: Validator[] = [
         name: 'max',
         priority: 1,
         validate: (el: HTMLInputElement, limit: any): boolean => {
-            // TODO: Need to account for checkboxes
+            if (el.type === 'checkbox') {
+                return groupedElemCount(el) <= parseInt(limit)
+            }
             return parseFloat(el.value) <= parseFloat(limit)
         }
     },

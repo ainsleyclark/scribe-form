@@ -1,7 +1,20 @@
+/**
+ * validation.ts
+ *
+ * TODO
+ *
+ * @author Ainsley Clark
+ * @author URL:   https://ainsley.dev
+ * @author Email: hello@ainsley.dev
+ */
+import {ValidationErrors, ValidationMessages, Validator} from "./main";
 import {validators} from "./tests";
 import {lang} from "./lang";
 import {tmpl} from "./util";
 
+/**
+ *
+ */
 const ALLOWED_ATTRIBUTES = ['required', 'min', 'max', 'minlength', 'maxlength', 'pattern'];
 
 /**
@@ -15,26 +28,25 @@ export class ValidationElement {
     /**
      *
      */
-    validators: Validator[]
+    validators: Validator[] = [];
     /**
      *
      */
     params: {
         [key: string]: any
-    }
+    } = {};
     /**
      *
      */
-    messages: Map<string, string>
+    messages: Map<string, string> = new Map<string, string>();
     /**
      *
      */
-    errors: { [name: string]: string }
+    errors: ValidationErrors = {};
     /**
      *
      */
     dataAttribute: string
-
     /**
      *
      * @param input
@@ -42,10 +54,6 @@ export class ValidationElement {
      */
     constructor(input: HTMLElement, dataAttribute: string) {
         this.input = input;
-        this.validators = [];
-        this.params = {};
-        this.messages = new Map<string, string>();
-        this.errors = {};
         this.dataAttribute = dataAttribute;
         this.assign();
     }
@@ -59,8 +67,10 @@ export class ValidationElement {
 
     /**
      *
+     * @param messages
+     * @returns { message: string, valid: boolean }
      */
-    public validate(): { message: string, valid: boolean } {
+    public validate(messages: ValidationMessages): { message: string, valid: boolean } {
         let valid = true,
             message = '';
 
@@ -72,13 +82,7 @@ export class ValidationElement {
             const isValid = validator.validate.apply(this.input, params);
             if (!isValid) {
                 valid = false;
-                let msg = this.messages.get(name);
-                if (!msg) {
-                    msg = lang[name];
-                }
-                msg = tmpl.apply(msg, params)
-                this.errors[name] = msg
-                message = msg;
+                message = tmpl.apply(this.getMessage(messages, validator, name), params);
             }
         });
 
@@ -90,13 +94,50 @@ export class ValidationElement {
 
     /**
      *
+     * @param global
+     * @param validator
+     * @param name
+     * @returns string
+     * @private
+     */
+    private getMessage(global: ValidationMessages, validator: Validator, name: string): string {
+        // First check if there is a message within the
+        // validator, as that's where to user defined messages are.
+        if (validator.message) {
+            return validator.message
+        }
+
+        // Check if there is a message attached to the field
+        // i.e (data attribute).
+        const attr = this.messages.get(name);
+        if (attr) {
+            return attr
+        }
+
+        // Fall back to the global messages.
+        const glob = global[name as keyof ValidationMessages];
+        if (glob) {
+            return glob;
+        }
+
+        // Return from lang.
+        const def = lang[name];
+        if (def) {
+            return def;
+        }
+
+        return "Please enter a correct value";
+    }
+
+    /**
+     *
      * @private
      */
     private assign() {
         Array.from(this.input.attributes).forEach(attr => {
             const reg = new RegExp(`^data-${this.dataAttribute}-`);
             if (reg.test(attr.name)) {
-                let name = <string>attr.name.substr(12);
+                let name = <string>attr.name.substr(6 + this.dataAttribute.length);
                 if (name.includes("message")) {
                     this.messages.set(name.replace("-message", ""), attr.value);
                     return;

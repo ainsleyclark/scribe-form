@@ -7,14 +7,14 @@
  * @author URL:   https://ainsley.dev
  * @author Email: hello@ainsley.dev
  */
-
 import {validators} from "./tests";
 import Classes from "../common/classes";
 import {Log} from "../common/log";
 import {ValidationElement} from "./element";
+import {ValidateFn, ValidationConfig, ValidationErrors} from "./main";
 
 /**
- *
+ * The inputs to select for validation.
  */
 const SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, select"
 
@@ -23,30 +23,44 @@ const SELECTORS = "input:not([type^=hidden]):not([type^=submit]), textarea, sele
  */
 export class Validation {
     /**
-     * The main form being validated.
+     * Form is the element being validated.
      */
     form: HTMLFormElement;
     /**
-     * The array of validation elements on the form.
+     * Fields is the array of validation elements on the form.
      */
-    fields: ValidationElement[];
+    private fields: ValidationElement[];
     /**
-     * TODO
+     * Classes are the default class names to add when fields are marked.
      */
-    classes: {
+    private classes = {
         classTo: 'form-group',
         errorClass: 'form-group-error',
         successClass: 'form-group-success',
         errorTextParent: 'form-group',
         errorTextTag: 'span',
         errorTextClass: 'form-message',
-    }
-    messages: {}
-
-    dataAttribute: "validate"
+    };
+    /**
+     * Messages TODO
+     * @private
+     */
+    private messages = {};
+    /**
+     * The data attribute to target.
+     * @private
+     */
+    private dataAttribute = "validate";
+    /**
+     * If the inputs should be validated on the fly, as the user types.
+     * @private
+     */
+    private live = false;
 
     /**
-     * TODO
+     * Creates a new Validation instance, form is either an element
+     * or selector. If the form does not exist in the DOM an error
+     * will be logged.
      * @param form
      * @param config
      */
@@ -54,15 +68,22 @@ export class Validation {
         if (typeof form === 'string') {
             form = <HTMLFormElement>document.querySelector(form);
         }
-        this.form = <HTMLFormElement>form;
-        if (config && config.classes) {
-            this.classes = {...this.classes, ...config.classes};
+
+        if (!form) {
+            Log.error("Cannot find form element in DOM: ", form)
+            return;
         }
+
+        this.form = <HTMLFormElement>form;
+
+        if (config) {
+            this.setConfig(config);
+        }
+
         this.init();
     }
-
     /**
-     * TODO
+     * Sets form attributes and construct the forms fields.
      * @private
      */
     private init(): void {
@@ -71,10 +92,36 @@ export class Validation {
         this.form.setAttribute("novalidate", "true");
 
         // Initialises the fields with new Validation elements.
-        this.fields = Array.from(this.form.querySelectorAll(SELECTORS))
-            .map(input => new ValidationElement(<HTMLElement>input, this.dataAttribute));
-    }
+        this.fields = Array.from(this.form.querySelectorAll(SELECTORS)).map(input => {
+            const el = new ValidationElement(<HTMLElement>input, this.dataAttribute);
 
+            // Attach event listener to input if live is set.
+            if (this.live) {
+                let type = el.input.getAttribute('type') || 'input' ;
+                el.input.addEventListener(~['radio', 'checkbox'].indexOf(type) ? 'change' : 'input', () => {
+                    this.validateField(el.input);
+                })
+            }
+
+            return el;
+        });
+    }
+    /**
+     * Set the validation configuration.
+     * @param config
+     * @private
+     */
+    public setConfig(config: ValidationConfig): void {
+        if (config.classes) {
+            this.classes = {...this.classes, ...config.classes};
+        }
+        if (config.messages) {
+            this.messages = {...this.messages, ...config.messages};
+        }
+        if (config.live) {
+            this.live = config.live;
+        }
+    }
     /**
      * TODO
      * @param silent
@@ -88,7 +135,6 @@ export class Validation {
         });
         return valid;
     }
-
     /**
      * TODO
      * @param field
@@ -109,8 +155,12 @@ export class Validation {
         }
 
         // Validate and mark/unmark the field.
-        const validate = el.validate();
+        const validate = el.validate(this.messages);
+
+        console.log(validate);
+
         if (!validate.valid && !silent) {
+            console.log(validate);
             this.mark(el.input, validate.message);
         } else if (!silent) {
             this.unmark(el.input);
@@ -118,20 +168,18 @@ export class Validation {
 
         return validate.valid;
     }
-
     /**
      *
      */
-    public getErrors(): { [name: string]: string } {
-        let errors: ScribeValidationErrors[] = [];
-        this.fields.forEach(field => {
-            errors.push(field.errors);
-        })
-        return errors;
+    public getErrors(field: HTMLElement | Element | string | null): ValidationErrors | ValidationErrors[] {
+        return [];
+
+        // let errors: ScribeValidationErrors[] = [];
+        // this.fields.forEach(field => {
+        //     errors.push(field.errors);
+        // })
+        // return errors;
     }
-
-    // TODO: Events
-
     /**
      * Resets the form validation removing any invalid messages,
      * and error classes from the form.
@@ -142,7 +190,6 @@ export class Validation {
             this.fields[index].clearErrors();
         });
     }
-
     /**
      * Resets the form by removing any invalid messages and error
      * classes, and destroys the validation instance.
@@ -151,7 +198,6 @@ export class Validation {
         this.reset();
         this.fields = [];
     }
-
     /**
      * Adds a global custom validator to the instance.
      * @param name
@@ -160,10 +206,8 @@ export class Validation {
      * @param priority
      */
     public addValidator(name: string, validator: ValidateFn, message: string, priority: number): void {
-        validators.add(name, validator, priority);
-        // TODO: We need to add the message to globals here.
+        validators.add(name, validator, priority, message);
     }
-
     /**
      * Mark the field container invalid and adds a message to the
      * end of the containers HTML.
@@ -172,8 +216,9 @@ export class Validation {
      * @private
      */
     private mark(field: HTMLElement, message: string): void {
-        const container = <HTMLElement>field.closest('.' + this.classes.classTo)
+        const container = <HTMLElement>field.closest('.' + this.classes.classTo);
         if (!container) {
+            Log.error('Container not found in DOM:', this.classes.classTo);
             return;
         }
 
@@ -196,7 +241,6 @@ export class Validation {
             Classes.add(container, this.classes.errorClass);
         }, 10);
     }
-
     /**
      * Unmark the field as invalid and removes the message from
      * the DOM.
@@ -206,6 +250,7 @@ export class Validation {
     private unmark(field: HTMLElement): void {
         const container = <HTMLElement>field.closest('.' + this.classes.classTo);
         if (!container) {
+            Log.error('Container not found in DOM:', this.classes.classTo);
             return;
         }
 
