@@ -131,7 +131,7 @@ export type ValidationMessages = {
 export interface Validator {
 	/**
 	 * The name of the validator to add, this will be reflective of messages
-	 * such as `my-validate` will resolve to data-my-validate-message="test".
+	 * such as `my-validate` will resolve to data-my-validate-message="tests".
 	 */
 	name: string
 	/**

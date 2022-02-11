@@ -10,7 +10,7 @@
  * @author URL: https://ainsley.dev
  * @author Email: hello@ainsley.dev
  */
-import {validators} from "./tests";
+import {validators} from "./built-in";
 import Classes from "../common/classes";
 import {Log} from "../common/log";
 import {ValidationElement} from "./element";

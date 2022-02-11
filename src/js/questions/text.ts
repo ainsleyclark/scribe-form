@@ -29,7 +29,7 @@ export class QuestionText {
 
 
         //
-        // eltTooltip.innerHTML = "test"
+        // eltTooltip.innerHTML = "tests"
         // eltTooltip.setAttribute('id', idTooltip);
         // eltTooltip.addEventListener("click", function () {
         //     alert('click');

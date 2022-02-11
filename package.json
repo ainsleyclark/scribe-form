@@ -21,6 +21,8 @@
 		"production": "mix --production",
 		"prod": "npm run production",
 		"test": "jest",
+		"test:watch": "jest --watch",
+		"coverage": "jest --collect-coverage && node util/open-coverage.js",
 		"publish": "npm run publish",
 		"lint": "eslint . --ext .ts",
 		"lint-and-fix": "eslint . --ext .ts --fix"

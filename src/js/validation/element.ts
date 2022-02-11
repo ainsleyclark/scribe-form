@@ -10,7 +10,7 @@
  * @author Email: hello@ainsley.dev
  */
 import {ValidationErrors, ValidationMessages, Validator} from "./main";
-import {validators} from "./tests";
+import {validators} from "./built-in";
 import {lang} from "./lang";
 import {tmpl} from "./util";
 

@@ -1,5 +1,5 @@
 /**
- * tests.ts
+ * built-in.ts
  *
  * Built in validators and definitions for validation including the
  * Validation class for adding user defined validation functions.
@@ -16,7 +16,7 @@ import {Log} from "../common/log";
  * Validation is responsive for formatting initial validation methods
  * and adding any custom user validation functions.
  */
-class Validation {
+class Validators {
 	/**
 	 * The key, value pairs of validators.
 	 */
@@ -28,10 +28,10 @@ class Validation {
      */
     constructor() {
         this.tests = {};
-        tests.forEach(test => this.add(test.name, test.validate, test.priority));
+        builtIn.forEach(test => this.add(test.name, test.validate, test.priority));
     }
     /**
-	 * Adds a validator to the tests object.
+	 * Adds a validator to the builtIn object.
 	 * If a validator already exists, the function will return.
 	 * @param name
 	 * @param validate
@@ -50,7 +50,7 @@ class Validation {
 		this.sort();
     }
 	/**
-	 * Sorts the tests' priority in ascending order.
+	 * Sorts the builtIn' priority in ascending order.
 	 */
 	sort() {
 		this.tests = Object
@@ -66,7 +66,7 @@ class Validation {
 /**
  * The array of built-in validators.
  */
-const tests: Validator[] = [
+const builtIn: Validator[] = [
     {
         name: 'required',
         priority: 99,
@@ -162,4 +162,4 @@ const tests: Validator[] = [
     }
 ];
 
-export const validators = new Validation();
+export const validators = new Validators();
