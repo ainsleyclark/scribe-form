@@ -10,7 +10,6 @@
 
 import {Log} from "./common/log";
 import Classes from "./common/classes";
-import {QuestionText} from "./questions/text";
 import {Validation} from "./validation/validation";
 import {ValidationConfig} from "./validation/main";
 

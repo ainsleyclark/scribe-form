@@ -55,7 +55,7 @@ class Validators {
 	sort() {
 		this.tests = Object
 			.entries(this.tests)
-			.sort((a, b) => b[1].priority - a[1].priority)
+			.sort((a, b) => a[1].priority - b[1].priority)
 			.reduce((_sortedObj, [k,v]) => ({
 				..._sortedObj,
 				[k]: v
