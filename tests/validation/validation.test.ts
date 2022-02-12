@@ -1,8 +1,9 @@
 import {Validation} from "../../src/js/validation/validation";
 import {Log} from "../../src/js/common/log";
-import {ValidationConfig, ValidationMessages} from "../../src/js/validation/main";
+import {ValidationConfig, ValidationErrors, ValidationMessages} from "../../src/js/validation/main";
 import {validators} from "../../src/js/validation/built-in";
 import {lang} from "../../src/js/validation/lang";
+import {ValidationElement} from "../../src/js/validation/element";
 
 beforeEach(() => {
 	jest.spyOn(console, 'error').mockImplementation(() => ({}));
@@ -149,38 +150,51 @@ describe('Validator Class', () => {
 			});
 		});
 
+		describe('Classes', () => {
+
+			// it('Adds error class', async() => {
+			// 	const val = setup('<input type="text" required>');
+			// 	val.validateField('.test');
+			// 	const group = document.querySelector('.form-group');
+			// 	if (!group) {
+			// 		fail('Group should exist');
+			// 	}
+			// 	await new Promise((r) => setTimeout(r, 20));
+			// 	expect(group.classList.contains('form-group-error')).toBe(true)
+			// });
+			//
+			// it('Adds success class', async() => {
+			// 	const val = setup('<input type="text" required value="test">');
+			// 	val.validateField('.test');
+			// 	const group = document.querySelector('.form-group');
+			// 	if (!group) {
+			// 		fail('Group should exist');
+			// 	}
+			// 	await new Promise((r) => setTimeout(r, 20));
+			// 	expect(group.classList.contains('form-group-success')).toBe(true)
+			// });
+		});
+
 		it('Bails if there is no selector', () => {
 			expect(setup(`<input type="text" required>`).validateField('.hello')).toBeFalsy();
 		});
-
-		// describe('TODO', () => {
-		//
-		// 	it('Adds error class', async() => {
-		// 		const val = setup('<input type="text" required>');
-		// 		val.validateField('.test');
-		// 		const group = document.querySelector('.form-group');
-		// 		if (!group) {
-		// 			fail('Group should exist');
-		// 		}
-		// 		await new Promise((r) => setTimeout(r, 20));
-		// 		expect(group.classList.contains('form-group-error')).toBe(true)
-		// 	});
-		//
-		// 	it('Adds success class', async() => {
-		// 		const val = setup('<input type="text" required value="test">');
-		// 		val.validateField('.test');
-		// 		const group = document.querySelector('.form-group');
-		// 		if (!group) {
-		// 			fail('Group should exist');
-		// 		}
-		// 		await new Promise((r) => setTimeout(r, 20));
-		// 		expect(group.classList.contains('form-group-success')).toBe(true)
-		// 	});
-		// });
 	});
 
 	describe('getErrors()', () => {
+		let val: Validation;
 
+		beforeEach(() => {
+			val = setup(`<input type="text" required class="test">`);
+			val.validate(true);
+		});
+
+		it('Should retrieve a singular error', function () {
+			expect(val.getErrors('.test')).toStrictEqual({"required": "This field is required"});
+		});
+
+		it('Should retrieve all errors as an array', function () {
+			expect(val.getErrors()).toStrictEqual([{"required": "This field is required"}]);
+		});
 	});
 
 	describe('addValidator()', () => {
