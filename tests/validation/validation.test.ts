@@ -1,28 +1,60 @@
 import {Validation} from "../../src/js/validation/validation";
+import {Log} from "../../src/js/common/log";
+import {ValidationConfig} from "../../src/js/validation/main";
 import {validators} from "../../src/js/validation/built-in";
-import {lang} from "../../src/js/validation/lang";
 
 beforeEach(() => {
 	jest.spyOn(console, 'error').mockImplementation(() => ({}));
 });
 
-
-const setup = (input: string, containerClass = 'form-group'): Validation => {
+const addForm = (input = '', containerClass = 'form-group'): void => {
 	document.body.innerHTML = '';
 	const tmpl = `
 <form class="form">
 	<div class="${containerClass}">${input}</div>
 </form>`;
 	document.body.innerHTML += tmpl;
-	return new Validation('.form');
+};
 
+const setup = (input = '', containerClass = 'form-group'): Validation => {
+	addForm(input, containerClass);
+	return new Validation('.form');
 };
 
 describe('Validator Class', () => {
 
-	describe('validateField()', () => {
+	describe('new', () => {
 
-		describe('Validates field successfully', () => {
+		it('Should return if there is no form found', () => {
+			const consoleSpy = jest.spyOn(Log, 'error');
+			new Validation('wrong');
+			expect(consoleSpy).toHaveBeenCalledWith('Cannot find form element in DOM:', null);
+		});
+
+		it('Adds configuration', () => {
+			addForm();
+			const config = <ValidationConfig>{
+				live: true,
+				showAll: true,
+				dataAttribute: 'attr',
+				classes: {
+					classTo: 'class',
+				},
+				messages: {
+					required: 'required',
+				}
+			};
+			const val = new Validation('.form', config);
+			expect(val['live']).toBeTruthy();
+			expect(val['showAll']).toBeTruthy();
+			expect(val['dataAttribute']).toEqual(config.dataAttribute);
+			expect(val['classes'].classTo).toEqual(config.classes?.classTo);
+			expect(val['messages']).toEqual(config.messages);
+		});
+	});
+
+	describe('validate()', () => {
+		describe('Validates valid fields', () => {
 			const validCases: string[] = [
 				'<input type="text" required value="hello">',
 				'<input type="text" data-validate-required value="hello">',
@@ -42,8 +74,9 @@ describe('Validator Class', () => {
 			test.each(validCases)(('.validate(\'%s\') returns true'), test => {
 				expect(setup(test).validate()).toBeTruthy();
 			});
+		});
 
-
+		describe('Validates invalid fields', () => {
 			const invalidCases: string[] = [
 				'<input type="text" required>',
 				'<input type="text" data-validate-required>',
@@ -64,35 +97,10 @@ describe('Validator Class', () => {
 			test.each(invalidCases)(('.validate(\'%s\') returns false'), test => {
 				expect(setup(test).validate()).toBeFalsy();
 			});
+		});
 
-			// type InvalidCases = {
-			// 	input: string,
-			// 	message?: string
-			// }
-			//
-			// const invalidCases: InvalidCases[] = [
-			// 	{input: '<input type="text" required>', message: lang['required']},
-			// 	{input: '<input type="text" required data-validate-required-message="invalid">', message: 'invalid'},
-			// 	{input: '<input type="email" value="wrong">', message: lang['email']},
-			// 	{input: '<input type="email" value="wrong" data-validate-email-message="invalid">', message: 'invalid'},
-			// 	{input: '<input data-validate-email value="wrong">', message: lang['email']},
-			// 	//{input: '<input type="number" value="wrong">', message: lang['number']},
-			// 	//{input: '<input type="number" value="wrong" data-validate-number-message="invalid">', message: 'invalid'},
-			// 	{input: '<input data-validate-number value="wrong">', message: lang['number']},
-			// 	{input: '<input type="url" value="wrong">', message: lang['url']},
-			// 	{input: '<input type="url" value="wrong" data-validate-url-message="invalid">', message: 'invalid'},
-			// 	{input: '<input data-validate-url="url" value="wrong">', message: lang['url']},
-			// 	{input: '<input type="url" value="wrong">', message: lang['url']},
-			// ];
-			//
-			// test.each(invalidCases)(('.validate($input) returns false with message ($message)'), test => {
-			// 	expect(setup(test.input).validate()).toBeFalsy();
-			// 	const message = document.querySelector('.form-message');
-			// 	if (!test.message || !message) {
-			// 		return;
-			// 	}
-			// 	expect(message.innerHTML).toEqual(test.message);
-			// });
+		it('Bails if there is no selector', () => {
+			expect(setup(`<input type="text" required>`).validateField('.hello')).toBeFalsy();
 		});
 
 		// describe('TODO', () => {
@@ -119,6 +127,66 @@ describe('Validator Class', () => {
 		// 		expect(group.classList.contains('form-group-success')).toBe(true)
 		// 	});
 		// });
+	});
+
+	describe('getErrors()', () => {
+
+	});
+
+	describe('addValidator()', () => {
+		afterEach(() => {
+			delete validators.tests['new'];
+		});
+		it('Should add validator', () => {
+			setup().addValidator('new', (): boolean => false);
+			expect(validators.tests['new']).toBeDefined();
+		});
+	});
+
+	describe('reset()', () => {
+		let val: Validation,
+			container: HTMLElement;
+
+		beforeEach(() => {
+			val = setup('<input type="text">', 'form-group form-group-error form-group-success');
+			container = <HTMLElement>document.querySelector(".form-group");
+			container.innerHTML += '<span class="form-message">Invalid</span>';
+			val.reset();
+		});
+
+		it('Should clear errors', () => {
+			expect(val['fields'][0].errors).toEqual({});
+		});
+
+		// it('Should remove classes', () => {
+		// 	//expect(container.classList.contains('form-group-error')).toBeFalsy();
+		// 	expect(container.classList.contains('form-group-success')).toBeFalsy();
+		// });
+		//
+		// it('Should remove messages', () => {
+		// 	expect(container.querySelectorAll(".form-message")).toBeNull();
+		// });
+	});
+
+	describe('destroy()', () => {
+		let val: Validation,
+			mockEvent: any;
+
+		beforeEach(() => {
+			addForm('<input type="text" class="test">', 'form-group');
+			val = new Validation('.form', <ValidationConfig>{live: true});
+			const input = document.querySelector(".test");
+			mockEvent = jest.spyOn(<HTMLElement>input, 'removeEventListener').mockImplementation(() => ({}));
+			val.destroy();
+		});
+
+		it('Should empty fields', () => {
+			expect(val['fields']).toEqual([]);
+		});
+
+		it('Remove event listeners', () => {
+			expect(mockEvent).toHaveBeenCalled();
+		});
 	});
 });
 

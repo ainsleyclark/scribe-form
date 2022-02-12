@@ -90,7 +90,7 @@ export class Validation {
         }
 
         if (!form) {
-            Log.error("Cannot find form element in DOM: ", form);
+            Log.error("Cannot find form element in DOM:", form);
             return;
         }
 
@@ -205,8 +205,16 @@ export class Validation {
      */
     public reset(): void {
         this.fields.forEach((field, index) => {
-            this.unmark(field.input);
-            this.fields[index].clearErrors();
+			this.fields[index].clearErrors();
+			const container = <HTMLElement>field.input.closest('.' + this.classes.classTo);
+			if (!container) {
+				return;
+			}
+			Classes.remove(container, this.classes.successClass);
+			Classes.remove(container, this.classes.errorClass);
+			container.querySelectorAll(this.classes.errorTextClass).forEach(message => {
+				message.remove();
+			});
         });
     }
 
