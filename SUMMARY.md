@@ -5,6 +5,6 @@
 
 ## Reference
 
-* [API Reference](reference/api-reference/README.md)
-  * [Pets](reference/api-reference/pets.md)
-  * [Users](reference/api-reference/users.md)
+* [API Reference](docs/api-reference/README.md)
+  * [Pets](docs/api-reference/pets.md)
+  * [Users](docs/api-reference/users.md)
