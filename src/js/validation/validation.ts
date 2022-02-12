@@ -132,7 +132,7 @@ export class Validation {
      */
     public validateField(field: HTMLElement | Element | string, silent = false): boolean {
         const el = this.findField(field);
-        if (!el) {
+		if (!el) {
             return false;
         }
 
@@ -247,7 +247,7 @@ export class Validation {
         }
 
         // Append the error message to the container.
-        const tag = `<${this.classes.errorTextTag} class="${this.classes.errorClass}">${errors[0]}</${this.classes.errorTextTag}>`;
+        const tag = `<${this.classes.errorTextTag} class="${this.classes.errorTextClass}">${errors[0]}</${this.classes.errorTextTag}>`;
         container.insertAdjacentHTML('beforeend', tag);
 
         // Add the error class to the container, add a delay, so it can be
@@ -332,6 +332,7 @@ export class Validation {
         // Check the html element exists in the current
         // fields, if there is no match, bail.
         const el = this.fields.find(f => f.input.isEqualNode(<Node>field));
+
         if (!el) {
             Log.error("Field not found in form:", field);
             return null;

@@ -50,12 +50,24 @@ type Cases = {
 	param?: any
 }
 
-const setup = (input?: string): HTMLInputElement => {
+const setup = (value?: string): HTMLInputElement => {
 	const el = document.createElement('input');
-	if (input) {
-		el.value = input;
+	if (value) {
+		el.value = value;
 	}
 	return el;
+};
+
+const setupGroup = (): HTMLInputElement => {
+	const tmpl = `
+<form>
+	<input type="checkbox" id="check" name="group" checked>
+	<input type="checkbox" name="group" checked>
+	<input type="checkbox" name="group">
+</form>`;
+
+	document.body.innerHTML += tmpl;
+	return <HTMLInputElement>document.querySelector("#check");
 };
 
 describe('Tests', () => {
@@ -72,6 +84,10 @@ describe('Tests', () => {
 
 		test.each(cases)(('.required($input) returns $want'), test => {
 			expect(validators.tests['required'].validate(setup(test.input))).toEqual(test.want);
+		});
+
+		it('Should count all checkboxes', () => {
+			expect(validators.tests['required'].validate(setupGroup())).toEqual(true);
 		});
 	});
 
@@ -153,6 +169,11 @@ describe('Tests', () => {
 		test.each(cases)('.min($input, $param) returns $want', test => {
 			expect(validators.tests['min'].validate(setup(test.input), test.param)).toEqual(test.want);
 		});
+
+		it('Should count all checkboxes', () => {
+			expect(validators.tests['min'].validate(setupGroup(), '1')).toEqual(true);
+			expect(validators.tests['min'].validate(setupGroup(), '3')).toEqual(false);
+		});
 	});
 
 	describe('Max should be validated', () => {
@@ -164,6 +185,11 @@ describe('Tests', () => {
 
 		test.each(cases)('.max($input, $param) returns $want', test => {
 			expect(validators.tests['max'].validate(setup(test.input), test.param)).toEqual(test.want);
+		});
+
+		it('Should count all checkboxes', () => {
+			expect(validators.tests['max'].validate(setupGroup(), '1')).toEqual(false);
+			expect(validators.tests['max'].validate(setupGroup(), '3')).toEqual(true);
 		});
 	});
 

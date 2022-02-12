@@ -73,7 +73,7 @@ const builtIn: Validator[] = [
         validate: (el: HTMLInputElement): boolean => {
             const value = el.value;
             if (el.type === 'radio' || el.type === 'checkbox') {
-                return groupedElemCount(el) === 0;
+                return groupedElemCount(el) !== 0;
             }
             return value !== undefined && value !== '';
         }
