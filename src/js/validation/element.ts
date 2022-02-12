@@ -142,13 +142,8 @@ export class ValidationElement {
             return glob;
         }
 
-        // Return from lang.
-        const def = lang[name];
-        if (def) {
-            return def;
-        }
-
-        return "Please enter a correct value";
+        // Return from lang/default.
+		return lang[name] ? lang[name] : 'Please enter a correct value';
     }
 
     /**
