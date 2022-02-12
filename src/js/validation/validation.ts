@@ -207,12 +207,9 @@ export class Validation {
         this.fields.forEach((field, index) => {
 			this.fields[index].clearErrors();
 			const container = <HTMLElement>field.input.closest('.' + this.classes.classTo);
-			if (!container) {
-				return;
-			}
 			Classes.remove(container, this.classes.successClass);
 			Classes.remove(container, this.classes.errorClass);
-			container.querySelectorAll(this.classes.errorTextClass).forEach(message => {
+			container.querySelectorAll('.' + this.classes.errorTextClass).forEach(message => {
 				message.remove();
 			});
         });

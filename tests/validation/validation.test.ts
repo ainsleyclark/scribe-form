@@ -148,9 +148,10 @@ describe('Validator Class', () => {
 			container: HTMLElement;
 
 		beforeEach(() => {
-			val = setup('<input type="text">', 'form-group form-group-error form-group-success');
+			addForm('<input type="text" value="wrong">', 'form-group form-group-error form-group-success');
 			container = <HTMLElement>document.querySelector(".form-group");
 			container.innerHTML += '<span class="form-message">Invalid</span>';
+			val = new Validation('.form');
 			val.reset();
 		});
 
@@ -158,14 +159,14 @@ describe('Validator Class', () => {
 			expect(val['fields'][0].errors).toEqual({});
 		});
 
-		// it('Should remove classes', () => {
-		// 	//expect(container.classList.contains('form-group-error')).toBeFalsy();
-		// 	expect(container.classList.contains('form-group-success')).toBeFalsy();
-		// });
-		//
-		// it('Should remove messages', () => {
-		// 	expect(container.querySelectorAll(".form-message")).toBeNull();
-		// });
+		it('Should remove classes', () => {
+			expect(container.classList.contains('form-group-error')).toBeFalsy();
+			expect(container.classList.contains('form-group-success')).toBeFalsy();
+		});
+
+		it('Should remove messages', () => {
+			expect(container.querySelectorAll(".form-message").length).toBe(0);
+		});
 	});
 
 	describe('destroy()', () => {
