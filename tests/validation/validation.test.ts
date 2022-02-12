@@ -3,7 +3,6 @@ import {Log} from "../../src/js/common/log";
 import {ValidationConfig, ValidationErrors, ValidationMessages} from "../../src/js/validation/main";
 import {validators} from "../../src/js/validation/built-in";
 import {lang} from "../../src/js/validation/lang";
-import {ValidationElement} from "../../src/js/validation/element";
 
 beforeEach(() => {
 	jest.spyOn(console, 'error').mockImplementation(() => ({}));
@@ -152,27 +151,19 @@ describe('Validator Class', () => {
 
 		describe('Classes', () => {
 
-			// it('Adds error class', async() => {
-			// 	const val = setup('<input type="text" required>');
-			// 	val.validateField('.test');
-			// 	const group = document.querySelector('.form-group');
-			// 	if (!group) {
-			// 		fail('Group should exist');
-			// 	}
-			// 	await new Promise((r) => setTimeout(r, 20));
-			// 	expect(group.classList.contains('form-group-error')).toBe(true)
-			// });
-			//
-			// it('Adds success class', async() => {
-			// 	const val = setup('<input type="text" required value="test">');
-			// 	val.validateField('.test');
-			// 	const group = document.querySelector('.form-group');
-			// 	if (!group) {
-			// 		fail('Group should exist');
-			// 	}
-			// 	await new Promise((r) => setTimeout(r, 20));
-			// 	expect(group.classList.contains('form-group-success')).toBe(true)
-			// });
+			it('Adds error class', async() => {
+				setup('<input type="text" class="test" required>').validateField('.test');
+				await new Promise((r) => setTimeout(r, 20));
+				const group = <HTMLElement>document.querySelector('.form-group');
+				expect(group.classList.contains('form-group-error')).toBe(true)
+			});
+
+			it('Adds success class', async() => {
+				setup('<input type="text" class="test" value="hello" required>').validateField('.test');
+				await new Promise((r) => setTimeout(r, 20));
+				const group = <HTMLElement>document.querySelector('.form-group');
+				expect(group.classList.contains('form-group-success')).toBe(true)
+			});
 		});
 
 		it('Bails if there is no selector', () => {
