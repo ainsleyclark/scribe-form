@@ -17,16 +17,21 @@ import {Scribe} from "./scribe";
 // }) as ScribeInstance;
 
 
-
 const form = document.querySelector(".scribe-form") as HTMLFormElement,
 	input = document.querySelector("[name='first-name']") as HTMLInputElement;
 if (form) {
-	new Scribe({
+	const scribe = new Scribe({
 		form: form,
+		horizontal: true,
 	} as ScribeConfig);
 
+	scribe.addEventListener('indexChanged', e => {
+		console.log(scribe.getInfo());
+	});
 
-
+	scribe.addEventListener('transitionEnd', e => {
+		console.log("ended");
+	});
 
 
 	form.querySelectorAll("input:not([type^=hidden]):not([type^=submit]), textarea, select").forEach(input => {

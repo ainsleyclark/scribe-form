@@ -25,7 +25,7 @@ mix.options({
  * Files
  */
 mix
-    .ts('src/js/scribe.ts', 'www/js/scribe.js')
+    .ts('src/js/app.ts', 'www/js/scribe.js')
     .sass('src/scss/scribe.scss', 'www/css/scribe.css')
 
 

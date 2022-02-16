@@ -49,6 +49,12 @@ declare interface ScribeConfig {
      * TODO
      */
     size?: string
+
+
+	mode?: string
+
+	easing?: string
+
     /**
      * Controls the display and functionalities of controls components (prev/next buttons).
      * If true, display the controls and add all functionalities.
@@ -76,6 +82,9 @@ declare interface ScribeConfig {
      */
     nextButton?: HTMLElement | string | false;
 }
+
+declare type EventCallback = (arg: any) => void
+
 
 /**
  *

@@ -60,6 +60,14 @@ export class Scribe {
      * @private
      */
     private currentSlide = 0;
+	/**
+	 *
+	 * @type {{[p: string]: (...args: any[]) => void}}
+	 * @private
+	 */
+	private listeners: {
+		[method: string]: EventCallback
+	} = {}
     /**
      * TODO: Add jsDoc
      * @type {number}
@@ -83,10 +91,14 @@ export class Scribe {
             this.config = {...this.config, ...config};
         }
 
-        // @ts-ignore
+		if (!this.config.form) {
+			Log.error(`${this.config.form} is not a valid element`);
+			return;
+		}
+
         this.setForm(this.config.form);
 
-        this.list = this.form.querySelectorAll(".scribe-question") as unknown as HTMLLIElement[];
+        this.list = this.form.querySelectorAll(".scribe-question") as unknown as HTMLElement[];
 
         this.form.addEventListener("submit", e => {
             e.preventDefault();
@@ -106,7 +118,7 @@ export class Scribe {
        //x this.attachOk();
         this.addClasses();
 
-     //   this.focusElement(this.getInput(this.list[0]))
+     	//this.focusElement(this.getInput(this.list[0]))
     }
 
     /**
@@ -140,7 +152,7 @@ export class Scribe {
                 this.animate(this.list.length);
                 break;
             default:
-                Log.error("Target should be 'next', 'prev', 'first', 'last' or index");
+                Log.error("Target should be 'next', 'prev', 'first', 'last' or a number");
         }
     }
 
@@ -191,6 +203,23 @@ export class Scribe {
         };
     }
 
+	/**
+	 *
+	 * @param {string} method
+	 * @param {EventCallback} callback
+	 */
+	public addEventListener(method: string, callback: EventCallback) {
+		this.listeners[method] = callback;
+	}
+
+	/**
+	 *
+	 * @param {string} method
+	 */
+	public removeEventListener (method: string) {
+		delete this.listeners[method];
+	}
+
     // on(event,callback) {
     //     if(!_triggers[event])
     //         _triggers[event] = [];
@@ -216,23 +245,6 @@ export class Scribe {
 
     /**
      *
-     * @private
-     */
-    private addClasses() {
-        this.list.forEach((el, index) => {
-            if (index === 0) {
-                el.classList.add('scribe-active');
-                el.ariaHidden = 'false';
-            } else {
-                el.ariaHidden = 'true';
-                el.style.transform = `translate3d(0,${this.config.size},0)`;
-            }
-        });
-        this.form.classList.add('scribe-form-loaded');
-    }
-
-    /**
-     *
      * @param {number} to
      * @private
      */
@@ -246,11 +258,9 @@ export class Scribe {
             return;
         }
 
-
         // TODO Sanity check array
         const next = this.list[to],
             curr = this.list[this.currentSlide];
-
 
         const currentInput = this.getInput(curr);
         if (!currentInput) {
@@ -264,30 +274,65 @@ export class Scribe {
 
         this.burst++;
 
-        let currTransform = `translate3d(0,${this.config.size},0)`;
-        if (isForwards) {
-            currTransform = `translate3d(0,-${this.config.size},0)`;
-        }
+		this.emit('transitionStart');
+        this.addRemoveStyles(curr, false, isForwards);
+        this.addRemoveStyles(next, true, isForwards);
 
-        curr.style.transform = currTransform;
-        curr.style.opacity = '0';
-        curr.ariaHidden = 'true';
-        Classes.remove(curr, 'scribe-active');
-
-        next.style.transform = 'translate3d(0,0,0)';
-        next.style.opacity = '1';
-        next.ariaHidden = 'false';
-        Classes.add(next, 'scribe-active');
-
-        if (isForwards) {
-            this.currentSlide++;
-        } else {
-            this.currentSlide--;
-        }
+		isForwards ? this.currentSlide++ : this.currentSlide--;
 
         this.focusElement(this.getInput(next));
+
+		this.emit('indexChanged');
     }
 
+
+	/**
+	 *
+	 * @private
+	 */
+	private addClasses(): void {
+		this.list.forEach((el, index) => {
+			index === 0 ? this.addRemoveStyles(el, true): this.addRemoveStyles(el, false);
+		});
+		Classes.add(this.form, 'scribe-form-loaded');
+		this.form.setAttribute('autocomplete', 'off');
+	}
+
+	/**
+	 *
+	 * @param {HTMLElement} el
+	 * @param {boolean} hide
+	 * @param {boolean} forwards
+	 * @private
+	 */
+	private addRemoveStyles(el: HTMLElement, hide: boolean, forwards = false): void {
+		if (!hide) {
+			el.style.transform = this.getTransform(forwards);
+			el.style.opacity = '0';
+			el.ariaHidden = 'true';
+			Classes.remove(el, 'scribe-active');
+			return
+		}
+
+		el.style.transform = 'translate3d(0,0,0)';
+		el.style.opacity = '1';
+		el.ariaHidden = 'false';
+		Classes.add(el, 'scribe-active');
+	}
+
+	/**
+	 *
+	 * @return {string}
+	 * @private
+	 * @param negative
+	 */
+	private getTransform(negative: boolean): string {
+		const trans = negative ? `-${this.config.size}` : this.config.size;
+		if (this.config.horizontal) {
+			return `translate3d(${trans},0,0)`;
+		}
+		return `translate3d(0,${trans},0)`;
+	}
 
     /**
      *
@@ -312,6 +357,19 @@ export class Scribe {
             });
         }
     }
+
+	/**
+	 *
+	 * @param {string} method
+	 * @param {any} payload
+	 * @private
+	 */
+	private emit(method: string, payload = null) {
+		const callback = this.listeners[method];
+		if (typeof callback === 'function') {
+			callback(payload);
+		}
+	}
 
     /**
      *
@@ -344,11 +402,12 @@ export class Scribe {
             return;
         }
         setTimeout(() => {
+			this.emit('transitionEnd');
             this.burst--;
             if (this.burst === 0) {
                 el.focus();
             }
-        }, this.animatingTime - 100);
+        }, this.animatingTime);
     }
 
     /**
@@ -359,9 +418,6 @@ export class Scribe {
     private setForm(form: HTMLFormElement | string): void {
         if (typeof form === "string") {
             form = document.querySelector(form) as HTMLFormElement;
-        }
-        if (!form) {
-            Log.error(`${form} is not a valid HTMLFormElement`);
         }
         this.form = form;
     }
