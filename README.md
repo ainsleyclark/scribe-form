@@ -9,17 +9,17 @@
 ## Question Types
 
 ### Structure
-- Welcome
-- Ending
 - Statement
 - Question Group
 
 ### Simple
 - Text
 - Long Text
+- Number
 - URL
 - Email
 - Phone
+- Date
 
 ### Choice
 - Yes/No

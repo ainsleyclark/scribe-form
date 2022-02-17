@@ -17,26 +17,91 @@
 		</div>
 		<!-- Form -->
 		<form class="scribe-form" autocomplete="off">
-			<!-- First Name -->
-			<fieldset class="scribe-question" data-scribe-type="text">
-				<label for="q1">What's your first name?</label>
-				<input id="q1" name="first-name" type="text" />
-			</fieldset>
-			<!-- First Name -->
-			<fieldset class="scribe-question" data-scribe-type="text">
-				<label for="q4">What's your message?</label>
-				<textarea id="q4" name="message"></textarea>
-			</fieldset>
-			<!-- Last Name -->
-			<fieldset class="scribe-question" data-scribe-type="text">
-				<label for="q2">What's your last name?</label>
-				<input id="q2" type="email" name="last-name" data-scribe-type="email" data-scribe-email-message="Email message" data-scribe-minlength-message="IN MINLENGTH" />
-			</fieldset>
+			<!-- Statement -->
+<!--			<div class="scribe-group" data-scribe-type="statement">-->
+<!--				<h1>Welcome</h1>-->
+<!--			</div>-->
+
+			<!-- Multiple -->
+			<div class="scribe-group">
+				<p>This is a multiple choice type</p>
+				<div data-scribe-type="multiple">
+					<div data-scribe-key="a" data-scribe-value="a">
+						<p>Choice A</p>
+					</div>
+					<div data-scribe-key="b" data-scribe-value="b">
+						<p>Choice B</p>
+					</div>
+					<div data-scribe-key="c" data-scribe-value="c">
+						<p>Choice C</p>
+					</div>
+					<div data-scribe-key="d" data-scribe-value="d">
+						<p>Choice D</p>
+					</div>
+				</div>
+			</div>
+			<!-- Dropdown -->
+			<div class="scribe-group">
+				<label for="dropdown">This is a dropdown type</label>
+				<div data-scribe-type="dropdown">
+					<select name="dropdown" id="dropdown">
+						<option value="1">Number 1</option>
+						<option value="2">Number 2</option>
+						<option value="3">Number 3</option>
+						<option value="4">Number 4</option>
+					</select>
+				</div>
+			</div>
+
+
+			<!-- Text -->
+			<div class="scribe-group">
+				<label for="text">What's your first name?</label>
+				<input id="text" name="first-name" type="text" />
+			</div>
+			<!-- Long Text -->
+			<div class="scribe-group" >
+				<label for="long-text">What's your last name?</label>
+				<textarea id="long-text" name="long-text"></textarea>
+			</div>
+			<!-- Number -->
+			<div class="scribe-group">
+				<label for="number">What's your first name?</label>
+				<input type="number" id="number" />
+			</div>
+			<!-- URL -->
+			<div class="scribe-group">
+				<label for="url">What's your URL?</label>
+				<input type="url" id="url" />
+			</div>
 			<!-- Email -->
-			<fieldset class="scribe-question" data-scribe-type="text">
-				<label for="q3">What's your email?</label>
-				<input id="q3" name="email" type="text" />
-			</fieldset>
+			<div class="scribe-group">
+				<label for="email">What's your email?</label>
+				<input type="email" id="email" />
+			</div>
+			<!-- Phone -->
+			<div class="scribe-group">
+				<label for="telephone">What's your telephone?</label>
+				<input type="telephone" id="telephone" />
+			</div>
+			<!-- Date -->
+			<div class="scribe-group">
+				<label for="date">What's the date?</label>
+				<input type="date" id="date" />
+			</div>
+
+			<!-- Yes/No -->
+			<div class="scribe-group">
+				<p>This is a yes no type</p>
+				<div data-scribe-type="yes-no">
+					<label>
+						<input type="radio" name="choice-radio">Yes
+					</label>
+					<label>
+						<input type="radio" name="choice-radio">No
+					</label>
+				</div>
+			</div>
 		</form>
 		<script src="/js/scribe.js"></script>
 	</body>

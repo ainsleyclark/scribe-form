@@ -33,14 +33,14 @@ body {
 
 		&-loaded {
 
-			#{$self}-question {
+			#{$self}-group {
 				transition: transform 600ms ease 0s, opacity 300ms ease 0s;
 				will-change: transform, opacity;
 			}
 		}
 	}
 
-	&-question {
+	&-group {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -61,5 +61,13 @@ body {
 
 	&-active {
 		z-index: 99;
+	}
+}
+
+[data-scribe-type="multiple"]  {
+
+	> * {
+		cursor: pointer;
+		background: rgba(black, 0.2);
 	}
 }

@@ -22,17 +22,8 @@ const form = document.querySelector(".scribe-form") as HTMLFormElement,
 if (form) {
 	const scribe = new Scribe({
 		form: form,
-		horizontal: true,
+		horizontal: false,
 	} as ScribeConfig);
-
-	scribe.addEventListener('indexChanged', e => {
-		console.log(scribe.getInfo());
-	});
-
-	scribe.addEventListener('transitionEnd', e => {
-		console.log("ended");
-	});
-
 
 	form.querySelectorAll("input:not([type^=hidden]):not([type^=submit]), textarea, select").forEach(input => {
 		//input.addEventListener("input", e => {

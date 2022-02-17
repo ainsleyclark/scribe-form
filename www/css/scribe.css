@@ -427,11 +427,11 @@ body {
   min-height: 100vh;
   margin: 0 auto;
 }
-.scribe-form-loaded .scribe-question {
+.scribe-form-loaded .scribe-group {
   transition: transform 600ms ease 0s, opacity 300ms ease 0s;
   will-change: transform, opacity;
 }
-.scribe-question {
+.scribe-group {
   position: absolute;
   top: 0;
   left: 0;
@@ -445,9 +445,14 @@ body {
   padding: 0;
   border: none;
 }
-.scribe-question:not(:first-child) {
+.scribe-group:not(:first-child) {
   opacity: 0;
 }
 .scribe-active {
   z-index: 99;
+}
+
+[data-scribe-type=multiple] > * {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.2);
 }

@@ -12,6 +12,7 @@ import {Log} from "./common/log";
 import Classes from "./common/classes";
 import {Validation} from "./validation/validation";
 import {ValidationConfig} from "./validation/main";
+import {Multiple} from "./groups/multiple";
 
 const VERSION = "1.0.0";
 
@@ -65,7 +66,7 @@ export class Scribe {
 	 * @type {{[p: string]: (...args: any[]) => void}}
 	 * @private
 	 */
-	private listeners: {
+	private events: {
 		[method: string]: EventCallback
 	} = {}
     /**
@@ -98,7 +99,7 @@ export class Scribe {
 
         this.setForm(this.config.form);
 
-        this.list = this.form.querySelectorAll(".scribe-question") as unknown as HTMLElement[];
+        this.list = this.form.querySelectorAll(".scribe-group") as unknown as HTMLElement[];
 
         this.form.addEventListener("submit", e => {
             e.preventDefault();
@@ -109,9 +110,11 @@ export class Scribe {
             dataAttribute: 'scribe',
             showAll: false,
             classes: {
-                classTo: 'scribe-question',
+                classTo: 'scribe-group',
             }
         });
+
+        new Multiple(this.form, this.goTo);
 
         this.listener();
         this.attachControls();
@@ -157,25 +160,6 @@ export class Scribe {
     }
 
     /**
-     * TODO: Add jsDoc
-     * @private
-     */
-    private listener(): void {
-        document.addEventListener('keypress', e => {
-            const isEnter = e.key === 'Enter';
-            if (e.shiftKey && isEnter && e.target instanceof HTMLTextAreaElement) {
-                e.preventDefault();
-                e.target.value += "\n";
-                return;
-            }
-            if (isEnter) {
-                e.preventDefault();
-                this.goTo('next');
-            }
-        });
-    }
-
-    /**
      * Determines if the current slide is the first in the form.
      * @returns {boolean}
      */
@@ -199,6 +183,7 @@ export class Scribe {
         return <ScribeInfo>{
             index: this.currentSlide,
             items: this.list.length,
+            // TODO: Events
             progress: this.progress(),
         };
     }
@@ -209,38 +194,24 @@ export class Scribe {
 	 * @param {EventCallback} callback
 	 */
 	public addEventListener(method: string, callback: EventCallback) {
-		this.listeners[method] = callback;
+		this.events[method] = callback;
 	}
 
 	/**
 	 *
 	 * @param {string} method
 	 */
-	public removeEventListener (method: string) {
-		delete this.listeners[method];
+	public removeEventListener(method: string) {
+		delete this.events[method];
 	}
 
-    // on(event,callback) {
-    //     if(!_triggers[event])
-    //         _triggers[event] = [];
-    //     _triggers[event].push( callback );
-    // }
-
     /**
      *
-     * @returns {number}
-     * @private
-     */
-    private progress(): number {
-        return (this.currentSlide / this.list.length) * 100;
-    }
-
-    /**
-     *
+     * @param {boolean} silent
      * @returns {boolean}
      */
-    public validate(): boolean {
-        return true;
+    public validate(silent: boolean): boolean {
+        return this.validation.validate(silent);
     }
 
     /**
@@ -269,7 +240,7 @@ export class Scribe {
 
         const valid = this.validation.validateField(currentInput);
         if (!valid && isForwards) {
-            return;
+            this.emit('validationFailed', currentInput);
         }
 
         this.burst++;
@@ -285,6 +256,33 @@ export class Scribe {
 		this.emit('indexChanged');
     }
 
+    /**
+     * TODO: Add jsDoc
+     * @private
+     */
+    private listener(): void {
+        document.addEventListener('keypress', e => {
+            const isEnter = e.key === 'Enter';
+            if (e.shiftKey && isEnter && e.target instanceof HTMLTextAreaElement) {
+                e.preventDefault();
+                e.target.value += "\n";
+                return;
+            }
+            if (isEnter) {
+                e.preventDefault();
+                this.goTo('next');
+            }
+        });
+    }
+
+    /**
+     *
+     * @returns {number}
+     * @private
+     */
+    private progress(): number {
+        return (this.currentSlide / this.list.length) * 100;
+    }
 
 	/**
 	 *
@@ -364,8 +362,8 @@ export class Scribe {
 	 * @param {any} payload
 	 * @private
 	 */
-	private emit(method: string, payload = null) {
-		const callback = this.listeners[method];
+	private emit(method: string, payload: any = null) {
+		const callback = this.events[method];
 		if (typeof callback === 'function') {
 			callback(payload);
 		}
